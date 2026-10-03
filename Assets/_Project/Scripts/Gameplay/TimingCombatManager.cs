@@ -47,12 +47,66 @@ namespace Game.Gameplay
             }
             Instance = this;
 
-            // Cấu hình danh sách quái mặc định nếu trống
+            // Cấu hình danh sách quái mặc định mở rộng theo chuẩn Version 2
             if (_enemyConfigs.Count == 0)
             {
-                _enemyConfigs.Add(new EnemyConfig { enemyName = "Ninja Scout", maxHp = 80, attackDamage = 10, approachSpeed = 2.8f, windupDuration = 0.7f, strikeWindow = 0.25f, scoreReward = 50 });
-                _enemyConfigs.Add(new EnemyConfig { enemyName = "Shadow Ronin", maxHp = 140, attackDamage = 20, approachSpeed = 2.2f, windupDuration = 0.6f, strikeWindow = 0.22f, scoreReward = 100 });
-                _enemyConfigs.Add(new EnemyConfig { enemyName = "Dark Assassin", maxHp = 200, attackDamage = 30, approachSpeed = 3.5f, windupDuration = 0.5f, strikeWindow = 0.18f, scoreReward = 200 });
+                _enemyConfigs.Add(new EnemyConfig 
+                { 
+                    enemyName = "Ninja Scout", 
+                    maxHp = 90, 
+                    attackDamage = 12, 
+                    approachSpeed = 3.0f, 
+                    windupDuration = 0.65f, 
+                    strikeWindow = 0.22f, 
+                    scoreReward = 50,
+                    isBoss = false,
+                    comboStrikesCount = 1,
+                    spriteName = "Enemy_Scout"
+                });
+
+                _enemyConfigs.Add(new EnemyConfig 
+                { 
+                    enemyName = "Swift Assassin", 
+                    maxHp = 75, 
+                    attackDamage = 18, 
+                    approachSpeed = 4.2f, 
+                    windupDuration = 0.40f, // Quái nhanh chém 0.4s
+                    strikeWindow = 0.16f, 
+                    scoreReward = 100,
+                    isBoss = false,
+                    comboStrikesCount = 1,
+                    spriteName = "Enemy_Swift"
+                });
+
+                _enemyConfigs.Add(new EnemyConfig 
+                { 
+                    enemyName = "Iron Brute", 
+                    maxHp = 220, 
+                    attackDamage = 35, 
+                    approachSpeed = 1.8f, 
+                    windupDuration = 0.80f, // Quái búa nặng chém 0.8s
+                    strikeWindow = 0.35f, 
+                    scoreReward = 150,
+                    isBoss = false,
+                    comboStrikesCount = 1,
+                    spriteName = "Enemy_Brute"
+                });
+
+                _enemyConfigs.Add(new EnemyConfig 
+                { 
+                    enemyName = "Shadow Shogun (Boss)", 
+                    maxHp = 380, 
+                    attackDamage = 45, 
+                    approachSpeed = 2.4f, 
+                    windupDuration = 0.50f, 
+                    strikeWindow = 0.20f, 
+                    scoreReward = 300,
+                    isBoss = true,
+                    comboStrikesCount = 3, // Boss 3 nhịp chém liên hoàn
+                    spriteName = "Enemy_Boss"
+                });
+
+                _totalEnemiesInWave = _enemyConfigs.Count;
             }
         }
 
@@ -130,6 +184,10 @@ namespace Game.Gameplay
             {
                 defeatedEnemy.OnDefeated -= HandleEnemyDefeated;
                 _currentScore += defeatedEnemy.ScoreReward;
+
+                // Thưởng tiền vàng cho người chơi tích lũy nâng cấp
+                int coinReward = Mathf.Max(10, defeatedEnemy.ScoreReward / 2);
+                Game.Data.SaveService.Instance?.AddCoins(coinReward);
             }
 
             _enemiesDefeated++;
@@ -149,6 +207,7 @@ namespace Game.Gameplay
         private void HandleWaveCleared()
         {
             Debug.Log($"[TimingCombatManager] Wave {_currentWave} hoàn tất vẻ vang! Điểm: {_currentScore}");
+            Game.Data.SaveService.Instance?.AddCoins(100);
             if (_onVictoryTriggeredChannel != null)
             {
                 _onVictoryTriggeredChannel.RaiseEvent();

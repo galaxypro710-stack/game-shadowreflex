@@ -42,3 +42,13 @@ Thumbs.db
 credentials.json
 google-services.json
 GoogleService-Info.plist
+
+# Security: Keystores & Passwords
+keystore/
+*.keystore
+*.jks
+
+# Build Logs & Android native intermediates
+*.log
+.utmp/
+

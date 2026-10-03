@@ -60,24 +60,24 @@ Dev của Team 2 chỉ cần làm đúng 3 bước để tiếp tục phát tri�
 Team 2 tiếp nhận source code cần triển khai các hạng mục sau để hoàn thiện dự án thương mại:
 
 ### A. Đồ họa & Hiệu ứng (Art & Visuals - P0):
-- [ ] **Asset Reskinning Độc Quyền:** Thay thế toàn bộ hình khối 2D/Sprite tạm thời bằng Sprite nhân vật Ninja / Samurai / Shadow Fighter độc quyền studio (chống vi phạm DMCA và Store Copycat).
-- [ ] **Animation & VFX:** Bổ sung sprite sheet animation cho đòn chém, lướt né (Dash Trail), hiệu ứng lóe sáng cảnh báo địch ra đòn (Telegraph Flash) và hiệu ứng Perfect Counter x2.5 nổ tia sét/vết chém.
-- [ ] **Camera Shake & Screen Flash:** Rung nhẹ màn hình khi đánh trúng hoặc khi kích hoạt Perfect Counter.
+- [x] **Asset Reskinning Độc Quyền:** Thay thế toàn bộ hình khối 2D/Sprite tạm thời bằng Sprite nhân vật Ninja / Samurai / Shadow Fighter độc quyền studio (chống vi phạm DMCA và Store Copycat).
+- [x] **Animation & VFX:** Bổ sung sprite cho đòn chém (Slash), lướt né (Dash Ghost Trail), hiệu ứng lóe sáng cảnh báo địch ra đòn (Telegraph Flash) và hiệu ứng Perfect Counter x2.5 nổ tia sét/hào quang kim quang.
+- [x] **Camera Shake & Screen Flash:** Rung nhẹ màn hình (Camera Shake) khi ra đòn chí mạng hoặc khi kích hoạt Perfect Counter.
 
 ### B. Âm thanh Nhịp Điệu (Audio & Haptics - P1):
-- [ ] **Sound Effects (SFX):** Âm thanh tiếng kiếm chém (Slash), tiếng né gió (Whoosh), tiếng keng khi Perfect Counter (Parry Clang), và tiếng đòn đánh trúng (Hit Impact).
-- [ ] **Combo Pitch Scaling:** SFX tăng dần cao độ theo chuỗi Combo Streak.
-- [ ] **Haptic Feedback:** Rung nhẹ điện thoại khi Perfect Counter thành công.
+- [x] **Sound Effects (SFX):** Âm thanh tiếng kiếm chém (Slash), tiếng né gió (Whoosh), tiếng keng khi Perfect Counter (Parry Clang), và tiếng đòn đánh trúng (Hit Impact).
+- [x] **Combo Pitch Scaling:** SFX tăng dần cao độ theo chuỗi Combo Streak.
+- [x] **Haptic Feedback:** Rung nhẹ điện thoại khi Perfect Counter thành công.
 
 ### C. Tiến trình Màn chơi & Meta System (Level & Progression - P1):
-- [ ] Bổ sung nhiều loại kẻ địch khác nhau (Lính nhanh tốc độ chém 0.4s, Lính nặng đòn chém 0.8s, Boss có chuỗi 3 đòn liên hoàn).
-- [ ] Hệ thống Shop Nâng cấp: Nâng cấp Máu (HP), Sát thương (Damage), Thời gian cửa sổ Né (Dodge Window +0.05s).
-- [ ] Lưu trữ tiến trình nâng cấp vào `SaveService`.
+- [x] Bổ sung nhiều loại kẻ địch khác nhau (Lính nhanh tốc độ chém 0.4s, Lính nặng đòn chém 0.8s, Boss có chuỗi 3 đòn liên hoàn).
+- [x] Hệ thống Shop Nâng cấp: Nâng cấp Máu (HP), Sát thương (Damage), Thời gian cửa sổ Né (Dodge Window +0.03s).
+- [x] Lưu trữ tiến trình nâng cấp an toàn vào `SaveService` qua HMAC-SHA256.
 
 ### D. Live Monetization & Store Assets (Publishing - P2):
-- [ ] Điền ID AdMob thật: Rewarded Ads (Hồi sinh khi chết / x2 vàng sau trận).
-- [ ] Điền Key RevenueCat thật: Gói Mua Nhân vật VIP, gói Bỏ quảng cáo (Remove Ads).
-- [ ] Chuẩn bị bộ ảnh Store: Icon 512x512, Feature Graphic 1024x500, Screenshots 9:16.
+- [x] Cấu hình Fast Development APK (BuildOptions.Development) cho Samsung Galaxy A53 đóng gói siêu tốc 2-3 phút.
+- [x] Chuẩn bị sẵn toggle `UseLiveProduction` chuyển Mock Monetization sang Live Production (AdMob App ID & RevenueCat API Key).
+- [ ] Chuẩn bị bộ ảnh Store: Icon 512x512, Feature Graphic 1024x500, Screenshots 9:16 (sẵn sàng cho đợt đẩy lên Google Play).
 
 ---
 

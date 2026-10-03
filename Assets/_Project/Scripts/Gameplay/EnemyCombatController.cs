@@ -24,6 +24,7 @@ namespace Game.Gameplay
         private float _stateTimer = 0f;
         private Transform _targetHero;
         private HeroCombatController _heroController;
+        private int _strikesInSequenceLeft = 0;
 
         public bool IsActive => _state != EnemyCombatState.Dead;
         public EnemyCombatState State => _state;
@@ -50,6 +51,10 @@ namespace Game.Gameplay
             _targetHero = targetHero;
             _heroController = heroController;
             _state = EnemyCombatState.Approaching;
+            _strikesInSequenceLeft = _config.comboStrikesCount;
+
+            // Nạp Sprite theo cấu hình quái
+            LoadEnemySprite(_config.spriteName);
 
             if (_spriteRenderer != null)
             {
@@ -58,6 +63,22 @@ namespace Game.Gameplay
 
             OnHpChanged?.Invoke(_currentHp, _config.maxHp);
             OnStateChanged?.Invoke(_state);
+        }
+
+        private void LoadEnemySprite(string spriteName)
+        {
+            if (string.IsNullOrEmpty(spriteName)) spriteName = "Enemy_Scout";
+            var sp = Resources.Load<Sprite>($"Art/Sprites/{spriteName}");
+#if UNITY_EDITOR
+            if (sp == null)
+            {
+                sp = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/_Project/Art/Sprites/{spriteName}.png");
+            }
+#endif
+            if (sp != null && _spriteRenderer != null)
+            {
+                _spriteRenderer.sprite = sp;
+            }
         }
 
         private void Update()
@@ -95,11 +116,18 @@ namespace Game.Gameplay
             else
             {
                 // Đã vào tầm đánh -> Bắt đầu giương đòn báo hiệu
-                _state = EnemyCombatState.WindupTelegraph;
-                _stateTimer = _config.windupDuration;
-                if (_spriteRenderer != null) _spriteRenderer.color = _telegraphColor;
-                OnStateChanged?.Invoke(_state);
+                TriggerWindup(_config.windupDuration);
             }
+        }
+
+        private void TriggerWindup(float duration)
+        {
+            _state = EnemyCombatState.WindupTelegraph;
+            _stateTimer = duration;
+            if (_spriteRenderer != null) _spriteRenderer.color = _telegraphColor;
+            CombatVFXController.Instance?.ShowTelegraphMark(transform.position);
+            Game.Audio.AudioManager.Instance?.PlayTelegraphWarning();
+            OnStateChanged?.Invoke(_state);
         }
 
         private void HandleWindup()
@@ -110,6 +138,7 @@ namespace Game.Gameplay
                 // Hết thời gian giương đòn -> Bắt đầu vung đòn (Active Strike)
                 _state = EnemyCombatState.ActiveStrike;
                 _stateTimer = _config.strikeWindow;
+                CombatVFXController.Instance?.HideTelegraphMark();
                 if (_spriteRenderer != null) _spriteRenderer.color = _strikeColor;
                 OnStateChanged?.Invoke(_state);
             }
@@ -126,11 +155,19 @@ namespace Game.Gameplay
                     _heroController.TakeDamage(_config.attackDamage);
                 }
 
-                // Trở về trạng thái Windup cho đòn tiếp theo
-                _state = EnemyCombatState.WindupTelegraph;
-                _stateTimer = _config.windupDuration;
-                if (_spriteRenderer != null) _spriteRenderer.color = _telegraphColor;
-                OnStateChanged?.Invoke(_state);
+                // Xử lý chuỗi đòn đánh liên hoàn (nếu là Boss có combo strikes)
+                _strikesInSequenceLeft--;
+                if (_strikesInSequenceLeft > 0)
+                {
+                    // Đòn tiếp theo chém nhanh hơn (Windup chỉ 0.28s)
+                    TriggerWindup(0.28f);
+                }
+                else
+                {
+                    // Hết chuỗi combo -> Reset lại chuỗi và hồi phục
+                    _strikesInSequenceLeft = _config.comboStrikesCount;
+                    TriggerWindup(_config.windupDuration);
+                }
             }
         }
 
@@ -139,10 +176,8 @@ namespace Game.Gameplay
             _stateTimer -= Time.deltaTime;
             if (_stateTimer <= 0f)
             {
-                _state = EnemyCombatState.WindupTelegraph;
-                _stateTimer = _config.windupDuration;
-                if (_spriteRenderer != null) _spriteRenderer.color = _telegraphColor;
-                OnStateChanged?.Invoke(_state);
+                _strikesInSequenceLeft = _config.comboStrikesCount;
+                TriggerWindup(_config.windupDuration);
             }
         }
 
@@ -174,6 +209,7 @@ namespace Game.Gameplay
         private void Die()
         {
             _state = EnemyCombatState.Dead;
+            CombatVFXController.Instance?.HideTelegraphMark();
             OnStateChanged?.Invoke(_state);
             OnDefeated?.Invoke(this);
             gameObject.SetActive(false);

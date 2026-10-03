@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using Game.Gameplay;
 
 namespace Game.UI
@@ -7,6 +8,7 @@ namespace Game.UI
     /// <summary>
     /// Giao diện chiến đấu thời gian thực chuẩn Zero-GC Delta Caching.
     /// Triệt tiêu hoàn toàn rác bộ nhớ chuỗi trong vòng lặp Update.
+    /// Hỗ trợ cả EventTrigger bắt chạm toàn màn hình (Left=Dodge, Right=Attack) và nút cổ điển.
     /// </summary>
     public class CombatHUD : MonoBehaviour
     {
@@ -22,6 +24,12 @@ namespace Game.UI
         [SerializeField] private Text _waveText;
         [SerializeField] private Button _attackButton;
         [SerializeField] private Button _dodgeButton;
+        [SerializeField] private Button _shopButton;
+        [SerializeField] private ShopPopup _shopPopup;
+
+        [Header("Full-Screen Anti-Overflow Touch Zones")]
+        [SerializeField] private EventTrigger _dodgeTouchZone;
+        [SerializeField] private EventTrigger _attackTouchZone;
 
         // Zero-GC Cache
         private int _cachedHealth = -1;
@@ -42,7 +50,11 @@ namespace Game.UI
                 _hero = _combatManager.Hero;
             }
 
-            // Gán sự kiện click nút cảm ứng
+            // Gán sự kiện EventTrigger cho 2 Touch Zones trong suốt full-screen
+            BindTouchZone(_dodgeTouchZone, HandleDodgeClicked);
+            BindTouchZone(_attackTouchZone, HandleAttackClicked);
+
+            // Gán sự kiện click nút cảm ứng (nếu có)
             if (_attackButton != null)
             {
                 _attackButton.onClick.AddListener(HandleAttackClicked);
@@ -52,12 +64,43 @@ namespace Game.UI
             {
                 _dodgeButton.onClick.AddListener(HandleDodgeClicked);
             }
+
+            if (_shopButton != null)
+            {
+                _shopButton.onClick.AddListener(HandleShopClicked);
+            }
+        }
+
+        private void BindTouchZone(EventTrigger trigger, System.Action action)
+        {
+            if (trigger == null || action == null) return;
+            var entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+            entry.callback.AddListener((_) => action());
+            trigger.triggers.Add(entry);
         }
 
         private void OnDestroy()
         {
             if (_attackButton != null) _attackButton.onClick.RemoveListener(HandleAttackClicked);
             if (_dodgeButton != null) _dodgeButton.onClick.RemoveListener(HandleDodgeClicked);
+            if (_shopButton != null) _shopButton.onClick.RemoveListener(HandleShopClicked);
+        }
+
+        private void HandleShopClicked()
+        {
+            if (_shopPopup != null)
+            {
+                _shopPopup.Open();
+            }
+            else
+            {
+                var popup = Object.FindAnyObjectByType<ShopPopup>(FindObjectsInactive.Include);
+                if (popup != null)
+                {
+                    _shopPopup = popup;
+                    popup.Open();
+                }
+            }
         }
 
         private void Update()

@@ -28,6 +28,9 @@ namespace Game.Gameplay
         private float _dodgeTimer = 0f;
         private float _hitFeedbackTimer = 0f;
 
+        private int _effectiveAttackDamage;
+        private float _effectiveDodgeDuration;
+
         public int CurrentHealth => _currentHealth;
         public int MaxHealth => _maxHealth;
         public int ComboCount => _comboCount;
@@ -46,6 +49,31 @@ namespace Game.Gameplay
             {
                 _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             }
+
+            LoadHeroSprite();
+            ApplyUpgrades();
+        }
+
+        private void LoadHeroSprite()
+        {
+#if UNITY_EDITOR
+            if (_spriteRenderer != null && _spriteRenderer.sprite == null)
+            {
+                var sp = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_Project/Art/Sprites/Hero_Ninja.png");
+                if (sp != null) _spriteRenderer.sprite = sp;
+            }
+#endif
+        }
+
+        public void ApplyUpgrades()
+        {
+            int bonusHp = HeroUpgradeManager.Instance != null ? HeroUpgradeManager.Instance.GetBonusHp() : 0;
+            int bonusDmg = HeroUpgradeManager.Instance != null ? HeroUpgradeManager.Instance.GetBonusDamage() : 0;
+            float bonusDodge = HeroUpgradeManager.Instance != null ? HeroUpgradeManager.Instance.GetBonusDodgeDuration() : 0f;
+
+            _maxHealth = 100 + bonusHp;
+            _effectiveAttackDamage = _baseAttackDamage + bonusDmg;
+            _effectiveDodgeDuration = _dodgeDuration + bonusDodge;
             _currentHealth = _maxHealth;
         }
 
@@ -100,7 +128,19 @@ namespace Game.Gameplay
                 {
                     isPerfectCounter = true;
                     multiplier = 2.5f;
+
+                    // Perfect Counter VFX, Audio & Camera Shake
+                    CombatVFXController.Instance?.PlayCounterBurst(targetEnemy.transform.position);
+                    CameraShakeController.Instance?.ShakeCritical();
+                    Game.Audio.AudioManager.Instance?.PlayParryClang(_comboCount);
                 }
+                else
+                {
+                    Game.Audio.AudioManager.Instance?.PlaySlash();
+                }
+
+                // Luôn tạo vệt chém kiếm
+                CombatVFXController.Instance?.PlaySlash(targetEnemy.transform.position, isPerfectCounter);
 
                 // Gia tăng Combo
                 _comboCount++;
@@ -109,9 +149,13 @@ namespace Game.Gameplay
 
                 // Tính toán sát thương lũy tiến theo nhịp điệu
                 float comboBonus = Mathf.Min(_comboCount * 0.05f, 1.5f);
-                int finalDamage = Mathf.RoundToInt(_baseAttackDamage * (1.0f + comboBonus) * multiplier);
+                int finalDamage = Mathf.RoundToInt(_effectiveAttackDamage * (1.0f + comboBonus) * multiplier);
 
                 targetEnemy.TakeDamage(finalDamage, isPerfectCounter);
+            }
+            else
+            {
+                Game.Audio.AudioManager.Instance?.PlaySlash();
             }
 
             OnAttackExecuted?.Invoke(isPerfectCounter);
@@ -122,12 +166,16 @@ namespace Game.Gameplay
             if (_state == HeroCombatState.Dead || _state == HeroCombatState.Dodging) return;
 
             _state = HeroCombatState.Dodging;
-            _dodgeTimer = _dodgeDuration;
+            _dodgeTimer = _effectiveDodgeDuration;
 
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.color = _dodgeColor;
             }
+
+            // SFX & Dash Ghost Trail
+            Game.Audio.AudioManager.Instance?.PlayWhoosh();
+            CombatVFXController.Instance?.PlayDashTrail(transform.position);
 
             OnDodgeExecuted?.Invoke();
         }
@@ -147,6 +195,10 @@ namespace Game.Gameplay
                 _spriteRenderer.color = _hitColor;
             }
 
+            // Hit Impact SFX & Light Shake
+            Game.Audio.AudioManager.Instance?.PlayHitImpact();
+            CameraShakeController.Instance?.ShakeLight();
+
             if (_currentHealth <= 0)
             {
                 _state = HeroCombatState.Dead;
@@ -156,7 +208,7 @@ namespace Game.Gameplay
 
         public void ResetHero()
         {
-            _currentHealth = _maxHealth;
+            ApplyUpgrades();
             _comboCount = 0;
             _comboTimer = 0f;
             _state = HeroCombatState.Idle;

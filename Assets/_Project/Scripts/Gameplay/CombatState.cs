@@ -32,5 +32,8 @@ namespace Game.Gameplay
         public float windupDuration = 0.65f;
         public float strikeWindow = 0.25f;
         public int scoreReward = 50;
+        public bool isBoss = false;
+        public int comboStrikesCount = 1; // Boss có thể chém 3 nhịp liên hoàn
+        public string spriteName = "Enemy_Scout";
     }
 }

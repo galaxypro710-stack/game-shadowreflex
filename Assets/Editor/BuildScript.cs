@@ -13,6 +13,16 @@ namespace Game.Editor
     /// </summary>
     public class BuildScript
     {
+        /// <summary>
+        /// Điểm vào kiểm thử tự động đạt chuẩn Meta-Factory CI/CD qua Unity Batchmode.
+        /// Chạy: python tools/run_unity.py -g ShadowReflex -m Game.Editor.BuildScript.AutoQACheck
+        /// </summary>
+        public static void AutoQACheck()
+        {
+            Debug.Log("[BuildScript] === KÍCH HOẠT AUTO QA CHECK CHO SHADOWREFLEX ===");
+            CoreValidationHelper.ValidateCore();
+        }
+
         public static void BuildAndroid()
         {
             string cleanGameName = string.IsNullOrEmpty(PlayerSettings.productName) 
@@ -38,6 +48,10 @@ namespace Game.Editor
             PlayerSettings.allowedAutorotateToLandscapeLeft = false;
             PlayerSettings.allowedAutorotateToLandscapeRight = false;
 
+            // Bật Fast Development Build để NDK Clang bỏ qua optimize nặng, build siêu tốc 2-3 phút trên máy thật
+            EditorUserBuildSettings.development = true;
+            EditorUserBuildSettings.connectProfiler = false;
+
             string apkLocation = $"Builds/Android/ShadowReflex.apk";
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
@@ -48,7 +62,7 @@ namespace Game.Editor
                 },
                 locationPathName = apkLocation,
                 target = BuildTarget.Android,
-                options = BuildOptions.None
+                options = BuildOptions.Development
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
