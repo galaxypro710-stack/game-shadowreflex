@@ -4,9 +4,13 @@
 - **Package Name:** com.galaxypro.shadowreflex
 - **Archetype:** timing_action_combat
 - **Status:** VERSION 2 COMMERCIAL & STORE RELEASE COMPLETE (Touch Zones Anti-Overflow, AdMob SDK, RevenueCat IAP, Supabase Leaderboard)
-- **Updated:** 2026-10-03T22:30:00+07:00
+- **Updated:** 2026-10-03T22:41:00+07:00
 - **Governing Skills:** `/ai-copilot-alignment`, `/behavior-model-debugger`, `/vibe-git-manager`, `/karpathy-guidelines`
-- **Rollback Anchor:** `v2_store_ready` (Branch `master`)
+- **Git Branch:** `feature/v2-combat-systems-monetization`
+- **Commit Hash:** `d12010b140168ceea088c71c37ebd0fec26866e8`
+- **GitHub PR #1:** https://github.com/galaxypro710-stack/game-shadowreflex/pull/1
+- **Rollback Anchor:** `96688eb` (master baseline) / `d12010b` (v2 feature branch)
+
 
 ---
 
