@@ -23,12 +23,22 @@ namespace Game.Editor
             Directory.CreateDirectory("Builds/Android");
 
             // Đảm bảo cấu hình Android chuẩn Store
+            PlayerSettings.companyName = "GalaxyPro Studio";
+            PlayerSettings.productName = "Shadow Reflex";
+            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "com.galaxypro.shadowreflex");
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
-            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7;
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
             EditorUserBuildSettings.buildAppBundle = false;
 
-            string apkLocation = $"Builds/Android/{cleanGameName}.apk";
+            // Khóa cứng màn hình Portrait dọc chuẩn 9:16
+            PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
+            PlayerSettings.allowedAutorotateToPortrait = true;
+            PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
+            PlayerSettings.allowedAutorotateToLandscapeLeft = false;
+            PlayerSettings.allowedAutorotateToLandscapeRight = false;
+
+            string apkLocation = $"Builds/Android/ShadowReflex.apk";
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
