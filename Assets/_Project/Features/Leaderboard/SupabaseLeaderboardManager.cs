@@ -12,14 +12,15 @@ namespace Game.Features.Leaderboard
     /// Trình quản lý Bảng xếp hạng toàn cầu tích hợp Supabase REST API & Local Cache.
     /// Tuân thủ nguyên tắc Standalone Offline-First:
     /// - Khi có mạng và cấu hình Supabase: Đồng bộ bảng xếp hạng realtime qua Supabase PostgREST.
-    /// - Khi ngoại tuyến / Desktop Mock: Tự động chuyển đổi sang Local Cache (được ký số HMAC-SHA256) với danh sách các huyền thoại Ai Cập.
+    ///   Bảng: "leaderboard" (cột: id, gamertag, score, wave, created_at).
+    /// - Khi ngoại tuyến / Desktop Mock: Tự động chuyển đổi sang Local Cache (được ký số HMAC-SHA256).
     /// </summary>
     public class SupabaseLeaderboardManager : MonoBehaviour, ILeaderboardService
     {
         public static SupabaseLeaderboardManager Instance { get; private set; }
 
-        public const string GamerTagKey = "TilePyramid_GamerTag";
-        public const string LocalLeaderboardCacheKey = "TilePyramid_LocalLeaderboardCache";
+        public const string GamerTagKey = "ShadowReflex_GamerTag";
+        public const string LocalLeaderboardCacheKey = "ShadowReflex_LocalLeaderboardCache";
 
         [Header("Supabase Configuration")]
         [SerializeField] private string _supabaseUrl = "https://your-project-id.supabase.co";
@@ -38,12 +39,30 @@ namespace Game.Features.Leaderboard
         public bool IsOnline => _isOnline;
         public string CurrentPlayerGamerTag => _currentPlayerGamerTag;
 
+        public string SupabaseUrl
+        {
+            get => _supabaseUrl;
+            set => _supabaseUrl = value;
+        }
+
+        public string SupabaseAnonKey
+        {
+            get => _supabaseAnonKey;
+            set => _supabaseAnonKey = value;
+        }
+
+        public string TableName
+        {
+            get => _tableName;
+            set => _tableName = value;
+        }
+
         public event Action<List<LeaderboardEntry>> OnLeaderboardUpdated;
 
-        private readonly string[] AncientEgyptianTitles = new[]
+        private readonly string[] NinjaTitles = new[]
         {
-            "Pharaoh", "Ramses", "Tutankhamun", "Cleopatra", "Nefertiti", 
-            "Anubis", "Horus", "Osiris", "Hatshepsut", "Thutmose", "Ra"
+            "Shadow", "Hayabusa", "Ryu", "Hanzo", "Sasuke", 
+            "Kotaro", "Kunoichi", "Ronin", "Kenshin", "Shinobi", "Genji"
         };
 
         private void Awake()
@@ -69,7 +88,7 @@ namespace Game.Features.Leaderboard
             }
             else
             {
-                string title = AncientEgyptianTitles[UnityEngine.Random.Range(0, AncientEgyptianTitles.Length)];
+                string title = NinjaTitles[UnityEngine.Random.Range(0, NinjaTitles.Length)];
                 int num = UnityEngine.Random.Range(100, 999);
                 _currentPlayerGamerTag = $"{title}_{num}";
                 PlayerPrefs.SetString(GamerTagKey, _currentPlayerGamerTag);
@@ -94,16 +113,14 @@ namespace Game.Features.Leaderboard
             {
                 var seedList = new List<LeaderboardEntry>
                 {
-                    new LeaderboardEntry(1, "Ramses_II", 12500, 10, "2026-09-20"),
-                    new LeaderboardEntry(2, "Nefertiti_77", 9800, 8, "2026-09-20"),
-                    new LeaderboardEntry(3, "Thutmose_III", 8400, 7, "2026-09-21"),
-                    new LeaderboardEntry(4, "Tutankhamun_01", 7200, 6, "2026-09-21"),
-                    new LeaderboardEntry(5, "Cleopatra_VIP", 6300, 5, "2026-09-21"),
-                    new LeaderboardEntry(6, "Anubis_Guardian", 5400, 5, "2026-09-21"),
-                    new LeaderboardEntry(7, "Horus_Sky", 4600, 4, "2026-09-21"),
-                    new LeaderboardEntry(8, "Osiris_Eternal", 3900, 3, "2026-09-21"),
-                    new LeaderboardEntry(9, "Sphinx_Riddle", 3100, 3, "2026-09-21"),
-                    new LeaderboardEntry(10, "Ra_SunGod", 2500, 2, "2026-09-21")
+                    new LeaderboardEntry(1, "Hayabusa_Prime", 12500, 10, "2026-09-20"),
+                    new LeaderboardEntry(2, "Hanzo_Steel", 9800, 8, "2026-09-20"),
+                    new LeaderboardEntry(3, "Kotaro_Ghost", 8400, 7, "2026-09-21"),
+                    new LeaderboardEntry(4, "Kunoichi_Mist", 7200, 6, "2026-09-21"),
+                    new LeaderboardEntry(5, "Ryu_Shadow", 5900, 5, "2026-09-22"),
+                    new LeaderboardEntry(6, "Sasuke_Flame", 5400, 5, "2026-09-21"),
+                    new LeaderboardEntry(7, "Genji_Cyborg", 4600, 4, "2026-09-21"),
+                    new LeaderboardEntry(8, "Kenshin_Battosai", 3900, 3, "2026-09-21")
                 };
 
                 SaveLocalCache(seedList);
@@ -146,11 +163,13 @@ namespace Game.Features.Leaderboard
             bool isConfiguredSupabase = !_forceOfflineMode 
                 && !string.IsNullOrEmpty(_supabaseUrl) 
                 && !_supabaseUrl.Contains("your-project-id") 
-                && !string.IsNullOrEmpty(_supabaseAnonKey);
+                && !string.IsNullOrEmpty(_supabaseAnonKey)
+                && !_supabaseAnonKey.Contains("placeholder");
 
             if (isConfiguredSupabase && Application.internetReachability != NetworkReachability.NotReachable)
             {
-                string endpoint = $"{_supabaseUrl.TrimEnd('/')}/rest/v1/{_tableName}?select=player_name,score,level,created_at&order=score.desc&limit={limit}";
+                // Schema chuẩn Supabase: id, gamertag, score, wave, created_at
+                string endpoint = $"{_supabaseUrl.TrimEnd('/')}/rest/v1/{_tableName}?select=id,gamertag,score,wave,created_at&order=score.desc&limit={limit}";
                 using (UnityWebRequest req = UnityWebRequest.Get(endpoint))
                 {
                     req.SetRequestHeader("apikey", _supabaseAnonKey);
@@ -197,31 +216,32 @@ namespace Game.Features.Leaderboard
             OnLeaderboardUpdated?.Invoke(localList);
         }
 
-        public void SubmitScore(string playerName, int score, int level, Action<bool> onComplete = null)
+        public void SubmitScore(string gamertag, int score, int wave, Action<bool> onComplete = null)
         {
-            if (string.IsNullOrEmpty(playerName)) playerName = _currentPlayerGamerTag;
-            StartCoroutine(SubmitScoreRoutine(playerName, score, level, onComplete));
+            if (string.IsNullOrEmpty(gamertag)) gamertag = _currentPlayerGamerTag;
+            StartCoroutine(SubmitScoreRoutine(gamertag, score, wave, onComplete));
         }
 
-        private IEnumerator SubmitScoreRoutine(string playerName, int score, int level, Action<bool> onComplete)
+        private IEnumerator SubmitScoreRoutine(string gamertag, int score, int wave, Action<bool> onComplete)
         {
             // 1. Cập nhật Local Cache trước để người chơi thấy điểm ngay lập tức (Instant UI Feedback)
             List<LeaderboardEntry> localList = LoadLocalCache();
             
             // Tìm và cập nhật hoặc thêm mới
-            var existing = localList.Find(e => string.Equals(e.player_name, playerName, StringComparison.OrdinalIgnoreCase));
+            var existing = localList.Find(e => string.Equals(e.gamertag, gamertag, StringComparison.OrdinalIgnoreCase) ||
+                                              string.Equals(e.player_name, gamertag, StringComparison.OrdinalIgnoreCase));
             if (existing != null)
             {
                 if (score > existing.score)
                 {
                     existing.score = score;
-                    existing.level = level;
+                    existing.wave = wave;
                     existing.created_at = DateTime.UtcNow.ToString("yyyy-MM-dd");
                 }
             }
             else
             {
-                localList.Add(new LeaderboardEntry(0, playerName, score, level, DateTime.UtcNow.ToString("yyyy-MM-dd")));
+                localList.Add(new LeaderboardEntry(0, gamertag, score, wave, DateTime.UtcNow.ToString("yyyy-MM-dd")));
             }
 
             // Sắp xếp giảm dần theo điểm số
@@ -240,12 +260,14 @@ namespace Game.Features.Leaderboard
             bool isConfiguredSupabase = !_forceOfflineMode 
                 && !string.IsNullOrEmpty(_supabaseUrl) 
                 && !_supabaseUrl.Contains("your-project-id") 
-                && !string.IsNullOrEmpty(_supabaseAnonKey);
+                && !string.IsNullOrEmpty(_supabaseAnonKey)
+                && !_supabaseAnonKey.Contains("placeholder");
 
             if (isConfiguredSupabase && Application.internetReachability != NetworkReachability.NotReachable)
             {
+                // Schema Supabase: cột gamertag, score, wave
                 string endpoint = $"{_supabaseUrl.TrimEnd('/')}/rest/v1/{_tableName}";
-                string payload = $"{{\"player_name\":\"{EscapeJson(playerName)}\",\"score\":{score},\"level\":{level}}}";
+                string payload = $"{{\"gamertag\":\"{EscapeJson(gamertag)}\",\"score\":{score},\"wave\":{wave}}}";
                 byte[] bodyRaw = Encoding.UTF8.GetBytes(payload);
 
                 using (UnityWebRequest req = new UnityWebRequest(endpoint, "POST"))
@@ -263,7 +285,7 @@ namespace Game.Features.Leaderboard
                     if (req.result == UnityWebRequest.Result.Success)
                     {
                         _isOnline = true;
-                        Debug.Log($"[SupabaseLeaderboardManager] ☁️ Điểm số {score} của '{playerName}' đã đồng bộ thành công lên Supabase!");
+                        Debug.Log($"[SupabaseLeaderboardManager] ☁️ Điểm số {score} (Wave {wave}) của '{gamertag}' đã đồng bộ thành công lên Supabase!");
                         onComplete?.Invoke(true);
                         yield break;
                     }

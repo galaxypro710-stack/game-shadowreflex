@@ -1,29 +1,42 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Game.Features.Leaderboard
 {
     /// <summary>
     /// Bản ghi điểm số trên Bảng xếp hạng toàn cầu.
+    /// Khớp chính xác với cấu trúc bảng Supabase: id, gamertag, score, wave, created_at.
     /// Hỗ trợ chuẩn hóa dữ liệu giữa Supabase REST API và Local Cache.
     /// </summary>
     [Serializable]
     public class LeaderboardEntry
     {
+        public long id;
         public int rank;
-        public string player_name;
+        public string gamertag;
         public int score;
-        public int level;
+        public int wave;
         public string created_at;
+
+        [SerializeField] private string player_name_legacy;
+        [SerializeField] private int level_legacy;
+
+        // Thuộc tính tương thích ngược cho UI
+        public string player_name => !string.IsNullOrEmpty(gamertag) ? gamertag : player_name_legacy;
+        public int level => wave > 0 ? wave : level_legacy;
 
         public LeaderboardEntry() { }
 
-        public LeaderboardEntry(int rank, string playerName, int score, int level, string createdAt)
+        public LeaderboardEntry(int rank, string gamertag, int score, int wave, string createdAt, long id = 0)
         {
+            this.id = id;
             this.rank = rank;
-            this.player_name = playerName;
+            this.gamertag = gamertag;
+            this.player_name_legacy = gamertag;
             this.score = score;
-            this.level = level;
+            this.wave = wave;
+            this.level_legacy = wave;
             this.created_at = createdAt;
         }
     }
@@ -43,6 +56,6 @@ namespace Game.Features.Leaderboard
         bool IsOnline { get; }
         string CurrentPlayerGamerTag { get; }
         void FetchTopScores(int limit, Action<List<LeaderboardEntry>> onSuccess, Action<string> onFailure = null);
-        void SubmitScore(string playerName, int score, int level, Action<bool> onComplete = null);
+        void SubmitScore(string gamertag, int score, int wave, Action<bool> onComplete = null);
     }
 }

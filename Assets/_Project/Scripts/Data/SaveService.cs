@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -39,10 +39,10 @@ namespace Game.Data
     /// </summary>
     public class SaveService : MonoBehaviour
     {
-        public const string SaveKey = "GameCore_SavedData";
-        public const string HighScoreKey = "GameCore_HighScore";
-        public const string CoinsKey = "GameCore_Coins";
-        public const string NoAdsKey = "GameCore_NoAds";
+        public const string SaveKey = "ShadowReflex_SavedData";
+        public const string HighScoreKey = "ShadowReflex_HighScore";
+        public const string CoinsKey = "ShadowReflex_Coins";
+        public const string NoAdsKey = "ShadowReflex_NoAds";
 
         // Salt máº·c Ä‘á»‹nh cá»§a Template Core (sáº½ Ä‘Æ°á»£c scaffold_new_game.ps1 sinh ngáº«u nhiÃªn cho tá»«ng game con)
         private static readonly byte[] HmacSalt = Encoding.UTF8.GetBytes("ShadowReflex_SecretSalt_a2abd944225b40c79ab61956154f42d9_v1");
@@ -197,9 +197,9 @@ namespace Game.Data
             return GetSecureInt(NoAdsKey, 0) == 1;
         }
 
-        public void SetNoAdsPurchased()
+        public void SetNoAdsPurchased(bool purchased = true)
         {
-            SetSecureInt(NoAdsKey, 1);
+            SetSecureInt(NoAdsKey, purchased ? 1 : 0);
         }
     }
 }

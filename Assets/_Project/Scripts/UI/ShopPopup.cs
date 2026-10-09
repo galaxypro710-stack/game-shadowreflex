@@ -19,6 +19,15 @@ namespace Game.UI
         [SerializeField] private Button _restorePurchasesButton;
         [SerializeField] private Button _closeButton;
 
+        [Header("Hero Upgrades UI")]
+        [SerializeField] private Button _upgradeHpButton;
+        [SerializeField] private Button _upgradeDamageButton;
+        [SerializeField] private Button _upgradeDodgeButton;
+        [SerializeField] private Text _coinsBalanceText;
+        [SerializeField] private Text _hpUpgradeText;
+        [SerializeField] private Text _damageUpgradeText;
+        [SerializeField] private Text _dodgeUpgradeText;
+
         [Header("Status Labels")]
         [SerializeField] private Text _noAdsStatusText;
         [SerializeField] private Text _feedbackText;
@@ -32,6 +41,10 @@ namespace Game.UI
             if (_restorePurchasesButton != null) _restorePurchasesButton.onClick.AddListener(OnRestorePurchasesClicked);
             if (_closeButton != null) _closeButton.onClick.AddListener(Close);
 
+            if (_upgradeHpButton != null) _upgradeHpButton.onClick.AddListener(OnUpgradeHpClicked);
+            if (_upgradeDamageButton != null) _upgradeDamageButton.onClick.AddListener(OnUpgradeDamageClicked);
+            if (_upgradeDodgeButton != null) _upgradeDodgeButton.onClick.AddListener(OnUpgradeDodgeClicked);
+
             UpdateStatus();
         }
 
@@ -41,22 +54,34 @@ namespace Game.UI
             if (_buyCoinPackButton != null) _buyCoinPackButton.onClick.RemoveListener(OnBuyCoinPackClicked);
             if (_restorePurchasesButton != null) _restorePurchasesButton.onClick.RemoveListener(OnRestorePurchasesClicked);
             if (_closeButton != null) _closeButton.onClick.RemoveListener(Close);
+
+            if (_upgradeHpButton != null) _upgradeHpButton.onClick.RemoveListener(OnUpgradeHpClicked);
+            if (_upgradeDamageButton != null) _upgradeDamageButton.onClick.RemoveListener(OnUpgradeDamageClicked);
+            if (_upgradeDodgeButton != null) _upgradeDodgeButton.onClick.RemoveListener(OnUpgradeDodgeClicked);
         }
 
         public void Open()
         {
+            Game.Audio.AudioManager.Instance?.PlayClick();
             gameObject.SetActive(true);
             UpdateStatus();
         }
 
         public void Close()
         {
+            Game.Audio.AudioManager.Instance?.PlayClick();
             gameObject.SetActive(false);
         }
 
         private void UpdateStatus()
         {
             bool hasNoAds = SaveService.Instance != null && SaveService.Instance.HasPurchasedNoAds();
+            int currentCoins = SaveService.Instance != null ? SaveService.Instance.GetCoins() : 0;
+
+            if (_coinsBalanceText != null)
+            {
+                _coinsBalanceText.text = $"VÀNG: {currentCoins:N0}";
+            }
 
             if (_noAdsStatusText != null)
             {
@@ -66,6 +91,97 @@ namespace Game.UI
             if (_buyNoAdsButton != null)
             {
                 _buyNoAdsButton.interactable = !hasNoAds;
+            }
+
+            // Cập nhật trạng thái nâng cấp Hero
+            var upgradeMgr = Game.Gameplay.HeroUpgradeManager.Instance;
+            if (upgradeMgr != null)
+            {
+                var data = upgradeMgr.Data;
+
+                if (_hpUpgradeText != null)
+                {
+                    bool isMax = data.hpLevel >= Game.Gameplay.HeroUpgradeData.MaxHpLevel;
+                    int cost = data.GetUpgradeCost(data.hpLevel);
+                    _hpUpgradeText.text = isMax 
+                        ? $"MÁU MAX (LV {data.hpLevel})" 
+                        : $"NÂNG MÁU +25 HP (LV {data.hpLevel}) - {cost} Vàng";
+                    if (_upgradeHpButton != null) _upgradeHpButton.interactable = !isMax && currentCoins >= cost;
+                }
+
+                if (_damageUpgradeText != null)
+                {
+                    bool isMax = data.damageLevel >= Game.Gameplay.HeroUpgradeData.MaxDamageLevel;
+                    int cost = data.GetUpgradeCost(data.damageLevel);
+                    _damageUpgradeText.text = isMax 
+                        ? $"SÁT THƯƠNG MAX (LV {data.damageLevel})" 
+                        : $"NÂNG CÔNG +8 DMG (LV {data.damageLevel}) - {cost} Vàng";
+                    if (_upgradeDamageButton != null) _upgradeDamageButton.interactable = !isMax && currentCoins >= cost;
+                }
+
+                if (_dodgeUpgradeText != null)
+                {
+                    bool isMax = data.dodgeLevel >= Game.Gameplay.HeroUpgradeData.MaxDodgeLevel;
+                    int cost = data.GetUpgradeCost(data.dodgeLevel);
+                    _dodgeUpgradeText.text = isMax 
+                        ? $"CỬA SỔ NÉ MAX (LV {data.dodgeLevel})" 
+                        : $"CỬA SỔ NÉ +0.03s (LV {data.dodgeLevel}) - {cost} Vàng";
+                    if (_upgradeDodgeButton != null) _upgradeDodgeButton.interactable = !isMax && currentCoins >= cost;
+                }
+            }
+        }
+
+        private void OnUpgradeHpClicked()
+        {
+            if (Game.Gameplay.HeroUpgradeManager.Instance != null)
+            {
+                if (Game.Gameplay.HeroUpgradeManager.Instance.TryUpgradeHP())
+                {
+                    Game.Audio.AudioManager.Instance?.PlayReward();
+                    ShowFeedback("NÂNG CẤP MÁU THÀNH CÔNG! (+25 HP)");
+                    UpdateStatus();
+                }
+                else
+                {
+                    Game.Audio.AudioManager.Instance?.PlayClick();
+                    ShowFeedback("Không đủ vàng hoặc đã đạt cấp tối đa!");
+                }
+            }
+        }
+
+        private void OnUpgradeDamageClicked()
+        {
+            if (Game.Gameplay.HeroUpgradeManager.Instance != null)
+            {
+                if (Game.Gameplay.HeroUpgradeManager.Instance.TryUpgradeDamage())
+                {
+                    Game.Audio.AudioManager.Instance?.PlayReward();
+                    ShowFeedback("NÂNG CẤP SÁT THƯƠNG THÀNH CÔNG! (+8 DMG)");
+                    UpdateStatus();
+                }
+                else
+                {
+                    Game.Audio.AudioManager.Instance?.PlayClick();
+                    ShowFeedback("Không đủ vàng hoặc đã đạt cấp tối đa!");
+                }
+            }
+        }
+
+        private void OnUpgradeDodgeClicked()
+        {
+            if (Game.Gameplay.HeroUpgradeManager.Instance != null)
+            {
+                if (Game.Gameplay.HeroUpgradeManager.Instance.TryUpgradeDodge())
+                {
+                    Game.Audio.AudioManager.Instance?.PlayReward();
+                    ShowFeedback("NÂNG CẤP CỬA SỔ NÉ THÀNH CÔNG! (+0.03s)");
+                    UpdateStatus();
+                }
+                else
+                {
+                    Game.Audio.AudioManager.Instance?.PlayClick();
+                    ShowFeedback("Không đủ vàng hoặc đã đạt cấp tối đa!");
+                }
             }
         }
 
@@ -83,6 +199,7 @@ namespace Game.UI
                         {
                             SaveService.Instance.SetNoAdsPurchased();
                         }
+                        Game.Audio.AudioManager.Instance?.PlayReward();
                         ShowFeedback("MUA THÀNH CÔNG! Đã gỡ bỏ toàn bộ quảng cáo.");
                         UpdateStatus();
                     },
@@ -104,6 +221,7 @@ namespace Game.UI
                     ProductCoinStarter,
                     onSuccess: () =>
                     {
+                        Game.Audio.AudioManager.Instance?.PlayReward();
                         if (SaveService.Instance != null)
                         {
                             SaveService.Instance.AddCoins(5000);
@@ -113,6 +231,7 @@ namespace Game.UI
                         {
                             ShowFeedback("MUA THÀNH CÔNG! +5,000 Vàng.");
                         }
+                        UpdateStatus();
                     },
                     onFailure: (err) =>
                     {

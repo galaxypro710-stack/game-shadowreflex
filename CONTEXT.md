@@ -1,26 +1,37 @@
-﻿# PROJECT CONTEXT & LIVING SPEC: ShadowReflex
+# PROJECT CONTEXT & LIVING SPEC: ShadowReflex
 
 - **Project:** ShadowReflex
 - **Package Name:** com.galaxypro.shadowreflex
 - **Archetype:** timing_action_combat
-- **Status:** INITIALIZED (Scaffolded from Meta-Factory Pure Engine Template)
-- **Updated:** 2026-10-03T16:50:24+07:00
+- **Status:** VERSION 2 COMMERCIAL & STORE RELEASE COMPLETE (Touch Zones Anti-Overflow, AdMob SDK, RevenueCat IAP, Supabase Leaderboard)
+- **Updated:** 2026-10-03T22:41:00+07:00
 - **Governing Skills:** `/ai-copilot-alignment`, `/behavior-model-debugger`, `/vibe-git-manager`, `/karpathy-guidelines`
-- **Rollback Anchor:** `initial_commit` (Branch `main`)
+- **Git Branch:** `feature/v2-combat-systems-monetization`
+- **Commit Hash:** `d12010b140168ceea088c71c37ebd0fec26866e8`
+- **GitHub PR #1:** https://github.com/galaxypro710-stack/game-shadowreflex/pull/1
+- **Rollback Anchor:** `96688eb` (master baseline) / `d12010b` (v2 feature branch)
+
 
 ---
 
-## ðŸ›ï¸ 1. Há»’ SÆ  Ká»¸ THUáº¬T & TRáº NG THÃI HIá»†N Táº I
-- **Kiáº¿n trÃºc:** 2-Tier C# Clean Architecture (Core Services + Feature Plugins)
+## 🎯 1. MINH CHỨNG THỰC CHỨNG (MECHANICAL PROOF)
+- **AutoQACheck (Unity CLI Batchmode):** **PASS 8/8 tiêu chí (Exit Code: 0)**
+- **Meta Integrity:** **100% PASS** (70 assets, 97 .metas, 0 missing, 0 orphan)
+- **Secret Hygiene:** **0 tokens detected** trên 417 files
 - **Save Service Salt:** `ShadowReflex_SecretSalt_a2abd944225b40c79ab61956154f42d9_v1`
 - **Keystore:** `keystore/ShadowReflex.keystore`
-- **Artifacts:**
-  - Standalone: `Builds/Windows/ShadowReflex.exe`
-  - Android APK: `Builds/Android/ShadowReflex.apk`
+- **Android APK Xuất Xưởng:** `Builds/Android/ShadowReflex.apk` (Exit Code: 0)
+- **Thiết Bị Kiểm Chứng (ADB):** LDPlayer 9 - Android 14 (`emulator-5554` / `127.0.0.1:5555`)
+- **Stitch MCP Design System:** Theme `Zen Jade Martial` (Project `projects/7803309454515022893`)
+- **Living Spec & PR Notes:** [implementation_notes.html](file:///D:/bkk/games/ShadowReflex/implementation_notes.html)
 
 ---
 
-## ðŸ›¡ï¸ 2. QUY Táº®C Báº¢O Máº¬T & Vá»† SINH MÃƒ NGUá»’N
-- ToÃ n bá»™ secret thá»±c táº¿ (Keystore password, API Keys) náº±m trong `.env.local` (Ä‘Æ°á»£c `.gitignore` báº£o vá»‡).
-- Nghiá»‡m thu báº¯t buá»™c xuáº¥t trÃ¬nh Terminal Log vá»›i Exit Code 0 trÆ°á»›c khi commit.
-
+## 🏛️ 2. KIẾN TRÚC & HẠ TẦNG V2 RELEASE
+- **Core (Tầng 1):** Giữ nguyên vẹn tính độc lập, SaveService HMAC-SHA256, Zero-GC Combat HUD.
+- **Gameplay (Tầng 2):**
+  - **Natural Touch Zones (Anti-Overflow):** Bắt chạm trong suốt toàn màn hình (Nửa trái = Né đòn, Nửa phải = Phản đòn) qua EventTrigger PointerDown phản xạ tức thì.
+  - **Sword HP Bar & Combo HUD:** Thanh máu hình kiếm ngang đỉnh màn hình viền kim loại tối, ngọc bích zen martial, combo counter tinh gọn.
+  - **AdMob SDK Adapter:** RewardedAd.Load & Show native từ Google Mobile Ads SDK kèm mock fallback offline-first.
+  - **RevenueCat IAP Adapter:** Purchases.Configure & Purchases.PurchasePackage cho `shadowreflex.noads` và `shadowreflex.coins.starter` (1,000 vàng).
+  - **Supabase Leaderboard:** Schema chuẩn `id, gamertag, score, wave, created_at` kèm SQL migration `supabase_schema.sql` có RLS policies.
