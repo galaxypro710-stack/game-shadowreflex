@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Implementation Notes - Shadow Reflex V1.5 Sensory Asset Injection</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #24292e; max-width: 960px; margin: 40px auto; padding: 0 20px; background-color: #0f111a; color: #e6edf3; }
+    h1, h2, h3 { color: #58a6ff; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px; margin: 20px 0; }
+    .badge-pass { background: #238636; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+    .badge-info { background: #1f6feb; color: #ffffff; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { border: 1px solid #30363d; padding: 10px; text-align: left; }
+    th { background: #21262d; color: #79c0ff; }
+    code { background: #262c36; padding: 2px 6px; border-radius: 4px; color: #f0883e; font-family: Consolas, monospace; }
+    pre { background: #0d1117; border: 1px solid #30363d; padding: 14px; border-radius: 6px; overflow-x: auto; color: #c9d1d9; }
+  </style>
+</head>
+<body>
+
+  <h1>⚔️ SHADOW REFLEX - IMPLEMENTATION NOTES: V1.5 KINETIC SENSORY INJECTION</h1>
+  <p><span class="badge-pass">PASS 9/9 AUTO QA</span> <span class="badge-info">EXIT CODE: 0</span> <strong>Ngày thực thi:</strong> 2026-10-10</p>
+
+  <div class="card">
+    <h2>1. 🎯 Unspecified & Implicit Decisions (Quyết định Ngầm định)</h2>
+    <ul>
+      <li><strong>Phong cách Mỹ thuật (Art Direction):</strong> Chọn phong cách Shadow Silhouette Noir sắc bén (thân Obsidian đen tuyền, mắt/khăn quàng phát sáng Cyan neon cho Hero, Cam báo động cho Scout, Đỏ thẫm rực lửa cho Ronin). Phong cách này giữ trọn Game Feel của dòng <em>Shadow Fight / OneTapShadow</em> mà vẫn đảm bảo tính đa hình (polymorphic).</li>
+      <li><strong>Âm học Chiến đấu (Combat Acoustics):</strong> Khởi tạo trực tiếp bằng thuật toán tổng hợp sóng âm 16-bit PCM 44.1kHz (WAV Mono) gồm: <code>sfx_slash.wav</code>, <code>sfx_dodge_whoosh.wav</code>, <code>sfx_parry_clang.wav</code>, <code>sfx_hit_impact.wav</code>, <code>sfx_enemy_alert.wav</code> và loop nhạc trống Taiko <code>bgm_shadow_battle.wav</code>.</li>
+      <li><strong>Kiến trúc Tích hợp Decoupled:</strong> Không gắn trực tiếp AudioSource vào Hero hay Enemy. Toàn bộ âm thanh đi qua <code>AudioManager.Instance.PlaySFX(...)</code> kèm dynamic pitch scaling theo chuỗi Combo Streak (+3% pitch mỗi bậc combo).</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>2. 🔄 Deviations from Specification (Độ Lệch & Biện Minh)</h2>
+    <ul>
+      <li><strong>Mở rộng Tiêu chí AutoQA từ 5 lên 9:</strong> Bổ sung thêm 4 tiêu chí kiểm tra cơ học thực tế cho SpriteRenderer của Hero, Sprite Set của Enemy trong TimingCombatManager, Phông nền Silhouette Đêm Trúc trong Scene, và 6/6 audio clips trong AudioManager. Đảm bảo Exit Code 0 phản ánh đúng cả thẩm mỹ và hạ tầng.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>3. ⚖️ Considered Trade-offs (Đánh đổi Kỹ thuật)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Phương án</th>
+          <th>Ưu điểm</th>
+          <th>Nhược điểm & Rủi ro</th>
+          <th>Kết luận</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Bê raw binary asset từ APK gốc</strong></td>
+          <td>Nhanh, nguyên bản 100%</td>
+          <td>Dính bản quyền DMCA vĩnh viễn trong Git history; đứt link shader/script</td>
+          <td><strong>Bác bỏ</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Chỉ dùng Procedural Box 9KB (V1 cũ)</strong></td>
+          <td>An toàn pháp lý 100%</td>
+          <td>Mất Game Feel, cảm giác chơi chán, không thể nghiệm thu nhịp đòn</td>
+          <td><strong>Bác bỏ</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Surgical Asset Injection V1.5 (Đã chọn)</strong></td>
+          <td>Thẩm mỹ xuất sắc, Game Feel chân thực, Pass AutoQA 9/9, chuẩn bị sẵn đường lùi cho V3 Hot-swap</td>
+          <td>Tốn công thiết kế script sinh asset và cấu hình Unity meta chuẩn</td>
+          <td><strong>LỰA CHỌN TỐI ƯU</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>4. 🛠️ Maintenance & V3 Release Notes (Hướng dẫn Bàn giao cho Team Art)</h2>
+    <ul>
+      <li>Toàn bộ 19 Staging Assets (13 Sprites + 6 Audios) đã được ghi nhận tự động vào <code>ASSET_REPLACEMENT_MANIFEST.md</code>.</li>
+      <li>Trước khi xuất xưởng Store ở Version 3, Team Art chỉ cần vẽ các bộ sprite độc quyền mới đúng kích thước (256x256 cho nhân vật, 540x960 cho nền) và thay thế 1:1 trong <code>Assets/_Project/Art/</code>.</li>
+      <li>Rollback Anchor đã lưu tại commit: <code>8dbe9ac</code> trong <code>CONTEXT.md</code>.</li>
+    </ul>
+  </div>
+
+</body>
+</html>

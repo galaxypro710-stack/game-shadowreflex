@@ -13,6 +13,14 @@ namespace Game.Editor
     /// </summary>
     public class BuildScript
     {
+        public static void AutoQACheck()
+        {
+            Debug.Log("[BuildScript] === BẮT ĐẦU AUTO QA CHECK CHO SHADOWREFLEX ===");
+            SceneSetupHelper.SetupScene();
+            CoreValidationHelper.ValidateCore();
+            EditorApplication.Exit(0);
+        }
+
         public static void BuildAndroid()
         {
             string cleanGameName = string.IsNullOrEmpty(PlayerSettings.productName) 

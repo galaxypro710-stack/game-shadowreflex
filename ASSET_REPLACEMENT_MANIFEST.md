@@ -8,10 +8,10 @@
 
 ## 📊 1. TỔNG QUAN TRẠNG THÁI KIỂM DỊCH (QUARANTINE STATUS)
 
-- **Trạng thái hiện tại:** `CLEAN_CORE (0 Staging Assets - Procedural / Pure Code)`
-- **Tổng số Staging Assets kế thừa:** **0 files**
-  - **Sprites 2D / Textures:** 0 files
-  - **Audio Clips (SFX / BGM):** 0 files
+- **Trạng thái hiện tại:** `STAGING_ACTIVE (V1/V2 R&D: 13 Sprites, 6 Audio Clips)`
+- **Tổng số Staging Assets kế thừa:** **19 files**
+  - **Sprites 2D / Textures:** 13 files
+  - **Audio Clips (SFX / BGM):** 6 files
 - **Số lượng đã Reskin độc quyền:** 0 files
 - **Điều kiện Đóng gói Release:** Bắt buộc 100% tài nguyên staging phải được thay thế trước khi ký Keystore Release Store.
 
@@ -21,8 +21,8 @@
 
 | STT | Nhóm Tài Nguyên | Đường dẫn Thư mục | Số lượng | Trạng thái | Yêu cầu Thiết kế lại (Art Direction cho V3) |
 | :---: | :--- | :--- | :---: | :---: | :--- |
-| 1 | Sprites 2D / UI / Characters | `Assets/_Project/Art/` | 0 files | `[STAGING]` | Vẽ mới toàn bộ Art độc quyền studio hoặc sinh bằng Midjourney/Flux, giữ đúng tỷ lệ Canvas và Pivot. |
-| 2 | Audio Clips (SFX & BGM) | `Assets/_Project/Audio/` | 0 files | `[STAGING]` | Tạo mới toàn bộ âm thanh sound fx bằng SFXR / AI Audio Generator, thời lượng và âm lượng cân bằng. |
+| 1 | Sprites 2D / UI / Characters | `Assets/_Project/Art/` | 13 files | `[STAGING]` | Vẽ mới toàn bộ Art độc quyền studio hoặc sinh bằng Midjourney/Flux, giữ đúng tỷ lệ Canvas và Pivot. |
+| 2 | Audio Clips (SFX & BGM) | `Assets/_Project/Audio/` | 6 files | `[STAGING]` | Tạo mới toàn bộ âm thanh sound fx bằng SFXR / AI Audio Generator, thời lượng và âm lượng cân bằng. |
 
 ---
 

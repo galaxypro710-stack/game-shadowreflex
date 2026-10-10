@@ -26,6 +26,14 @@ namespace Game.Gameplay
         [SerializeField] private int _totalEnemiesInWave = 3;
         [SerializeField] private List<EnemyConfig> _enemyConfigs = new List<EnemyConfig>();
 
+        [Header("Enemy Sprite Sets")]
+        [SerializeField] private Sprite _scoutIdle;
+        [SerializeField] private Sprite _scoutWindup;
+        [SerializeField] private Sprite _scoutStrike;
+        [SerializeField] private Sprite _roninIdle;
+        [SerializeField] private Sprite _roninWindup;
+        [SerializeField] private Sprite _roninStrike;
+
         private List<EnemyCombatController> _activeEnemies = new List<EnemyCombatController>();
         private EnemyCombatController _currentEngagedEnemy;
         private int _enemiesDefeated = 0;
@@ -117,6 +125,17 @@ namespace Game.Gameplay
             {
                 int cfgIdx = Mathf.Min(_enemiesDefeated, _enemyConfigs.Count - 1);
                 Transform heroTr = _hero != null ? _hero.transform : transform;
+
+                // Tự động gán Sprite set tương ứng (Scout vs Ronin)
+                if (cfgIdx == 0 && _scoutIdle != null)
+                {
+                    enemyCtrl.ConfigureSprites(_scoutIdle, _scoutWindup, _scoutStrike);
+                }
+                else if (_roninIdle != null)
+                {
+                    enemyCtrl.ConfigureSprites(_roninIdle, _roninWindup, _roninStrike);
+                }
+
                 enemyCtrl.Initialize(_enemyConfigs[cfgIdx], heroTr, _hero);
                 enemyCtrl.OnDefeated += HandleEnemyDefeated;
 

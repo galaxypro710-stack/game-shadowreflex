@@ -1,4 +1,4 @@
-﻿# PROJECT CONTEXT & LIVING SPEC: ShadowReflex
+# PROJECT CONTEXT & LIVING SPEC: ShadowReflex
 
 - **Project:** ShadowReflex
 - **Package Name:** com.galaxypro.shadowreflex
@@ -6,7 +6,7 @@
 - **Status:** INITIALIZED (Scaffolded from Meta-Factory Pure Engine Template)
 - **Updated:** 2026-10-03T16:50:24+07:00
 - **Governing Skills:** `/ai-copilot-alignment`, `/behavior-model-debugger`, `/vibe-git-manager`, `/karpathy-guidelines`
-- **Rollback Anchor:** `initial_commit` (Branch `main`)
+- **Rollback Anchor:** `8dbe9ac` (Branch `main` - Pre-V1.5 Asset Injection)
 
 ---
 

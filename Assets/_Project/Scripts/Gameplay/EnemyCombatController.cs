@@ -19,6 +19,11 @@ namespace Game.Gameplay
         [SerializeField] private Color _strikeColor = new Color(1f, 0.1f, 0.1f, 1f);    // Đỏ chớp nhoáng
         [SerializeField] private Color _hitColor = new Color(1f, 1f, 0.3f, 1f);       // Vàng khi bị đánh
 
+        [Header("Sprites")]
+        [SerializeField] private Sprite _idleSprite;
+        [SerializeField] private Sprite _windupSprite;
+        [SerializeField] private Sprite _strikeSprite;
+
         private int _currentHp;
         private EnemyCombatState _state = EnemyCombatState.Idle;
         private float _stateTimer = 0f;
@@ -43,6 +48,17 @@ namespace Game.Gameplay
             }
         }
 
+        public void ConfigureSprites(Sprite idle, Sprite windup, Sprite strike)
+        {
+            _idleSprite = idle;
+            _windupSprite = windup;
+            _strikeSprite = strike;
+            if (_spriteRenderer != null && _idleSprite != null)
+            {
+                _spriteRenderer.sprite = _idleSprite;
+            }
+        }
+
         public void Initialize(EnemyConfig config, Transform targetHero, HeroCombatController heroController)
         {
             _config = config ?? new EnemyConfig();
@@ -54,6 +70,7 @@ namespace Game.Gameplay
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.color = _normalColor;
+                if (_idleSprite != null) _spriteRenderer.sprite = _idleSprite;
             }
 
             OnHpChanged?.Invoke(_currentHp, _config.maxHp);
@@ -97,7 +114,12 @@ namespace Game.Gameplay
                 // Đã vào tầm đánh -> Bắt đầu giương đòn báo hiệu
                 _state = EnemyCombatState.WindupTelegraph;
                 _stateTimer = _config.windupDuration;
-                if (_spriteRenderer != null) _spriteRenderer.color = _telegraphColor;
+                if (_spriteRenderer != null)
+                {
+                    _spriteRenderer.color = _telegraphColor;
+                    if (_windupSprite != null) _spriteRenderer.sprite = _windupSprite;
+                }
+                Game.Audio.AudioManager.Instance?.PlayEnemyAlert();
                 OnStateChanged?.Invoke(_state);
             }
         }
@@ -110,7 +132,12 @@ namespace Game.Gameplay
                 // Hết thời gian giương đòn -> Bắt đầu vung đòn (Active Strike)
                 _state = EnemyCombatState.ActiveStrike;
                 _stateTimer = _config.strikeWindow;
-                if (_spriteRenderer != null) _spriteRenderer.color = _strikeColor;
+                if (_spriteRenderer != null)
+                {
+                    _spriteRenderer.color = _strikeColor;
+                    if (_strikeSprite != null) _spriteRenderer.sprite = _strikeSprite;
+                }
+                Game.Audio.AudioManager.Instance?.PlaySlash(0.85f);
                 OnStateChanged?.Invoke(_state);
             }
         }
@@ -129,7 +156,12 @@ namespace Game.Gameplay
                 // Trở về trạng thái Windup cho đòn tiếp theo
                 _state = EnemyCombatState.WindupTelegraph;
                 _stateTimer = _config.windupDuration;
-                if (_spriteRenderer != null) _spriteRenderer.color = _telegraphColor;
+                if (_spriteRenderer != null)
+                {
+                    _spriteRenderer.color = _telegraphColor;
+                    if (_windupSprite != null) _spriteRenderer.sprite = _windupSprite;
+                }
+                Game.Audio.AudioManager.Instance?.PlayEnemyAlert();
                 OnStateChanged?.Invoke(_state);
             }
         }
@@ -141,7 +173,11 @@ namespace Game.Gameplay
             {
                 _state = EnemyCombatState.WindupTelegraph;
                 _stateTimer = _config.windupDuration;
-                if (_spriteRenderer != null) _spriteRenderer.color = _telegraphColor;
+                if (_spriteRenderer != null)
+                {
+                    _spriteRenderer.color = _telegraphColor;
+                    if (_windupSprite != null) _spriteRenderer.sprite = _windupSprite;
+                }
                 OnStateChanged?.Invoke(_state);
             }
         }

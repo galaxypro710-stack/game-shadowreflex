@@ -21,12 +21,18 @@ namespace Game.Gameplay
         [SerializeField] private Color _dodgeColor = new Color(0.3f, 0.8f, 1f, 0.7f);
         [SerializeField] private Color _hitColor = new Color(1f, 0.2f, 0.2f, 1f);
 
+        [Header("Sprites")]
+        [SerializeField] private Sprite _idleSprite;
+        [SerializeField] private Sprite _attackSprite;
+        [SerializeField] private Sprite _dodgeSprite;
+
         private int _currentHealth;
         private HeroCombatState _state = HeroCombatState.Idle;
         private int _comboCount = 0;
         private float _comboTimer = 0f;
         private float _dodgeTimer = 0f;
         private float _hitFeedbackTimer = 0f;
+        private float _attackAnimTimer = 0f;
 
         public int CurrentHealth => _currentHealth;
         public int MaxHealth => _maxHealth;
@@ -47,6 +53,10 @@ namespace Game.Gameplay
                 _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
             }
             _currentHealth = _maxHealth;
+            if (_spriteRenderer != null && _idleSprite != null)
+            {
+                _spriteRenderer.sprite = _idleSprite;
+            }
         }
 
         private void Update()
@@ -60,7 +70,24 @@ namespace Game.Gameplay
                 if (_dodgeTimer <= 0f)
                 {
                     _state = HeroCombatState.Idle;
-                    if (_spriteRenderer != null) _spriteRenderer.color = _normalColor;
+                    if (_spriteRenderer != null)
+                    {
+                        _spriteRenderer.color = _normalColor;
+                        if (_idleSprite != null) _spriteRenderer.sprite = _idleSprite;
+                    }
+                }
+            }
+
+            // Xử lý hoàn nguyên animation đánh về Idle
+            if (_attackAnimTimer > 0f)
+            {
+                _attackAnimTimer -= Time.deltaTime;
+                if (_attackAnimTimer <= 0f && _state == HeroCombatState.Idle)
+                {
+                    if (_spriteRenderer != null && _idleSprite != null)
+                    {
+                        _spriteRenderer.sprite = _idleSprite;
+                    }
                 }
             }
 
@@ -114,6 +141,24 @@ namespace Game.Gameplay
                 targetEnemy.TakeDamage(finalDamage, isPerfectCounter);
             }
 
+            // Visual feedback: Switch sprite sang Attack
+            if (_spriteRenderer != null && _attackSprite != null)
+            {
+                _spriteRenderer.sprite = _attackSprite;
+                _attackAnimTimer = 0.18f;
+            }
+
+            // Audio feedback: Play Slash hoặc Perfect Parry Clang
+            if (isPerfectCounter)
+            {
+                Game.Audio.AudioManager.Instance?.PlayParryClang();
+            }
+            else
+            {
+                float pitch = 1.0f + Mathf.Min(_comboCount * 0.03f, 0.45f);
+                Game.Audio.AudioManager.Instance?.PlaySlash(pitch);
+            }
+
             OnAttackExecuted?.Invoke(isPerfectCounter);
         }
 
@@ -127,7 +172,10 @@ namespace Game.Gameplay
             if (_spriteRenderer != null)
             {
                 _spriteRenderer.color = _dodgeColor;
+                if (_dodgeSprite != null) _spriteRenderer.sprite = _dodgeSprite;
             }
+
+            Game.Audio.AudioManager.Instance?.PlayDodge();
 
             OnDodgeExecuted?.Invoke();
         }
@@ -147,6 +195,8 @@ namespace Game.Gameplay
                 _spriteRenderer.color = _hitColor;
             }
 
+            Game.Audio.AudioManager.Instance?.PlayHitImpact();
+
             if (_currentHealth <= 0)
             {
                 _state = HeroCombatState.Dead;
@@ -159,8 +209,13 @@ namespace Game.Gameplay
             _currentHealth = _maxHealth;
             _comboCount = 0;
             _comboTimer = 0f;
+            _attackAnimTimer = 0f;
             _state = HeroCombatState.Idle;
-            if (_spriteRenderer != null) _spriteRenderer.color = _normalColor;
+            if (_spriteRenderer != null)
+            {
+                _spriteRenderer.color = _normalColor;
+                if (_idleSprite != null) _spriteRenderer.sprite = _idleSprite;
+            }
             OnHealthChanged?.Invoke(_currentHealth, _maxHealth);
             OnComboChanged?.Invoke(0);
         }

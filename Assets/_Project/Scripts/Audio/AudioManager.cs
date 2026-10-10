@@ -25,6 +25,13 @@ namespace Game.Audio
         [SerializeField] private AudioClip _sfxLose;
         [SerializeField] private AudioClip _sfxReward;
 
+        [Header("Combat SFX")]
+        [SerializeField] private AudioClip _sfxSlash;
+        [SerializeField] private AudioClip _sfxDodgeWhoosh;
+        [SerializeField] private AudioClip _sfxParryClang;
+        [SerializeField] private AudioClip _sfxHitImpact;
+        [SerializeField] private AudioClip _sfxEnemyAlert;
+
         [Header("Event Channels")]
         [SerializeField] private GameStateEventChannelSO _onGameStateChangedChannel;
 
@@ -114,13 +121,20 @@ namespace Game.Audio
             }
         }
 
-        public void PlaySFX(AudioClip clip)
+        public void PlaySFX(AudioClip clip, float pitch = 1.0f)
         {
             if (_sfxSource != null && clip != null)
             {
+                _sfxSource.pitch = Mathf.Clamp(pitch, 0.7f, 1.6f);
                 _sfxSource.PlayOneShot(clip);
             }
         }
+
+        public void PlaySlash(float pitch = 1.0f) => PlaySFX(_sfxSlash, pitch);
+        public void PlayDodge() => PlaySFX(_sfxDodgeWhoosh, 1.0f);
+        public void PlayParryClang() => PlaySFX(_sfxParryClang, 1.08f);
+        public void PlayHitImpact() => PlaySFX(_sfxHitImpact, 0.95f);
+        public void PlayEnemyAlert() => PlaySFX(_sfxEnemyAlert, 1.0f);
 
         public void PlayClick()
         {

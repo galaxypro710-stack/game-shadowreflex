@@ -766,6 +766,9 @@ MonoBehaviour:
   _normalColor: {r: 1, g: 1, b: 1, a: 1}
   _dodgeColor: {r: 0.3, g: 0.8, b: 1, a: 0.7}
   _hitColor: {r: 1, g: 0.2, b: 0.2, a: 1}
+  _idleSprite: {fileID: 21300000, guid: cdf41ed286284cc78ebf433d7fb0c5c7, type: 3}
+  _attackSprite: {fileID: 21300000, guid: 8e2d62bb48c24addb72d88cb16b066ed, type: 3}
+  _dodgeSprite: {fileID: 21300000, guid: 45557b55540744cca672cfc590860e40, type: 3}
 --- !u!212 &349887347
 SpriteRenderer:
   serializedVersion: 3
@@ -813,17 +816,17 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: cdf41ed286284cc78ebf433d7fb0c5c7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 2.56, y: 2.56}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
 --- !u!4 &349887348
@@ -835,8 +838,8 @@ Transform:
   m_GameObject: {fileID: 349887345}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -1.8, y: -1.2, z: 0}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1771,7 +1774,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 663101423}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -2480,6 +2483,12 @@ MonoBehaviour:
   _onDefeatTriggeredChannel: {fileID: 0}
   _totalEnemiesInWave: 3
   _enemyConfigs: []
+  _scoutIdle: {fileID: 21300000, guid: 9cbce1908f5141eca8385387739b8140, type: 3}
+  _scoutWindup: {fileID: 21300000, guid: 9970ae0b42a94da18a4a5770c58d7bd7, type: 3}
+  _scoutStrike: {fileID: 21300000, guid: 6e966302274b44a48e718eea241969cf, type: 3}
+  _roninIdle: {fileID: 21300000, guid: f7f4e7dfdb784889b399954de0bf42d8, type: 3}
+  _roninWindup: {fileID: 21300000, guid: d543b1f14d954a34aec87eeef3fb92bf, type: 3}
+  _roninStrike: {fileID: 21300000, guid: f82b1b9f832e46e2a9d5e6dad4a5f703, type: 3}
 --- !u!4 &1030851080
 Transform:
   m_ObjectHideFlags: 0
@@ -3511,7 +3520,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 1430492944}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -3701,6 +3710,98 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1507156121
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1507156123}
+  - component: {fileID: 1507156122}
+  m_Layer: 0
+  m_Name: Background_Night
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &1507156122
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1507156121}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: -20
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 9a4ff480485d4735a75c6a78ac385db1, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 5.4, y: 9.6}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!4 &1507156123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1507156121}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 5}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1575541797
 GameObject:
   m_ObjectHideFlags: 0
@@ -3726,7 +3827,7 @@ Transform:
   m_GameObject: {fileID: 1575541797}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 0, z: 0}
+  m_LocalPosition: {x: 3.2, y: -1.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4212,11 +4313,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Game.Audio.AudioManager
   _bgmSource: {fileID: 220892854}
   _sfxSource: {fileID: 1257555166}
-  _bgmGameplay: {fileID: 0}
+  _bgmGameplay: {fileID: 8300000, guid: 38276eecbfd34655b10e31f188727a10, type: 3}
   _sfxClick: {fileID: 0}
   _sfxWin: {fileID: 0}
   _sfxLose: {fileID: 0}
   _sfxReward: {fileID: 0}
+  _sfxSlash: {fileID: 8300000, guid: 658c6363294840dd9d13f513be03d633, type: 3}
+  _sfxDodgeWhoosh: {fileID: 8300000, guid: b760f8b0ea894a0ba8465b5e283cc997, type: 3}
+  _sfxParryClang: {fileID: 8300000, guid: f1b933cd85944997a36f96607719f504, type: 3}
+  _sfxHitImpact: {fileID: 8300000, guid: a1c1efe617f04859a37cbbaf352d34a0, type: 3}
+  _sfxEnemyAlert: {fileID: 8300000, guid: c4b507adb22245829d63d2afcf6d1964, type: 3}
   _onGameStateChangedChannel: {fileID: 0}
 --- !u!4 &1957553126
 Transform:
@@ -4452,3 +4558,4 @@ SceneRoots:
   - {fileID: 1575541798}
   - {fileID: 1030851080}
   - {fileID: 544739386}
+  - {fileID: 1507156123}
