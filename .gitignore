@@ -52,6 +52,7 @@ tools/__pycache__/
 .env
 .env.local
 .env.*.local
+keystore/
 *.keystore
 *.jks
 credentials.json
