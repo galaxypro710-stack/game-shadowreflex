@@ -1,7 +1,9 @@
 # BIÊN BẢN BÀN GIAO KỸ THUẬT: VERSION 1 $\rightarrow$ VERSION 2 (HANDOVER KIT)
 
 > **Tên Sub-Game:** Shadow Reflex MVP  
-> **Package ID:** `com.galaxypro.shadowreflex`  
+> **Package ID (Internal R&D):** `com.galaxypro.shadowreflex`  
+> **Target Store Package ID (V3):** `com.galaxypro.shadowreflex`  
+> **Target Store Product Name (V3):** **Shadow Reflex Combat**  
 > **Archetype:** Timing Action Combat (1-Tap Reflex & Telegraph Counter)  
 > **Bên bàn giao:** Core Engine / Meta-Factory Team (Phụ trách Version 1 - Core Slice)  
 > **Bên tiếp nhận:** Commercial Release / Publishing Team (Phụ trách Version 2 - Hoàn Thiện & Phát Hành)  
@@ -26,6 +28,20 @@ Bản Version 1 đã hoàn thành đầy đủ Core Gameplay Loop, tích hợp t
 - [x] **Slomo Bullet Time và vệt chém kiếm katana khi parry thành công**
 - [x] **HMAC-SHA256 Encrypted SaveService**
 - [x] **Offline-First Mock AdMob & RevenueCat**
+
+---
+
+## 🛡️ 2. STORE ANTI-BAN & IDENTITY TRANSITION MAP
+
+| Giai Đoạn | Product Name | Application Identifier (Package ID) | Trạng thái Keystore & Art Asset |
+| :--- | :--- | :--- | :--- |
+| **V1 & V2 (Internal R&D)** | `Shadow Reflex MVP` | `com.galaxypro.shadowreflex` | Keystore nội bộ, Staging Assets kế thừa từ APK gốc |
+| **V3 (Store Release)** | **`Shadow Reflex Combat`** | **`com.galaxypro.shadowreflex`** | 100% Art Reskinned, 0 Staging Assets, Release Keystore |
+
+> [!IMPORTANT]
+> **Quy tắc chuyển đổi định danh trước khi nộp Store:**  
+> 1. Khi Team 3 hoàn thành thay thế 100% tài nguyên đồ họa (0 staging files trong `ASSET_REPLACEMENT_MANIFEST.md`), Team 2 sẽ cập nhật `PlayerSettings.productName` thành `Shadow Reflex Combat` và `applicationIdentifier` thành `com.galaxypro.shadowreflex`.
+> 2. Lệnh `python tools/quarantine_build_gate.py --release` sẽ tự động xác minh tính nguyên bản và cấp phép đóng gói file `.aab`.
 
 ---
 

@@ -25,6 +25,13 @@ SUSPICIOUS_DOMAINS = [
     r'https?://[a-zA-Z0-9.-]*branch\.io',
     r'https?://[a-zA-Z0-9.-]*singular\.net',
     r'https?://[a-zA-Z0-9.-]*kochava\.com',
+    r'https?://[a-zA-Z0-9.-]*gameanalytics\.com',
+    r'https?://[a-zA-Z0-9.-]*tenjin\.(com|io)',
+    r'https?://[a-zA-Z0-9.-]*flurry\.com',
+]
+
+KNOWN_TRADEMARKED_TERMS = [
+    'savethedoge', 'save the doge', 'mergemaster', 'merge master', 'pandapop', 'bubble panda'
 ]
 
 FONT_EXTENSIONS = ('.ttf', '.otf', '.woff', '.woff2')
@@ -137,6 +144,31 @@ def check_poison_strings(project_path):
     return hits
 
 
+def check_identity_hygiene(project_path):
+    project_settings = os.path.join(project_path, "ProjectSettings", "ProjectSettings.asset")
+    if not os.path.exists(project_settings):
+        return [], []
+
+    warnings = []
+    fatal_errors = []
+    try:
+        with open(project_settings, 'r', encoding='utf-8', errors='ignore') as ps:
+            content = ps.read()
+
+        if "companyName: DefaultCompany" in content:
+            warnings.append("companyName is set to 'DefaultCompany'")
+
+        lower_content = content.lower()
+        for tm in KNOWN_TRADEMARKED_TERMS:
+            for line in lower_content.splitlines():
+                if ('productname:' in line or 'applicationidentifier:' in line or 'android:' in line or 'iphone:' in line) and tm in line:
+                    warnings.append(f"Trademarked keyword '{tm}' found in: {line.strip()}")
+    except Exception:
+        pass
+
+    return warnings, fatal_errors
+
+
 def run_gate(project_path, is_release=False, audit_only=False):
     print("=" * 65)
     print(f"STORE ANTI-BAN QUARANTINE GATE: {os.path.basename(project_path)}")
@@ -188,6 +220,17 @@ def run_gate(project_path, is_release=False, audit_only=False):
             has_fatal_error = True
     else:
         print("    [+] PASS: Zero competitor tracker URLs detected.")
+
+    # 4. Identity & Trademark Hygiene
+    id_warnings, id_fatals = check_identity_hygiene(project_path)
+    print(f"[*] 4. Identity & Trademark Hygiene: {len(id_warnings)} notices, {len(id_fatals)} fatal.")
+    if id_warnings:
+        for iw in id_warnings[:5]:
+            print(f"    [NOTICE] {iw}")
+        if is_release:
+            print("    [WARN] Store release strongly recommends generic/original brandname and identifier.")
+    else:
+        print("    [+] PASS: Brandname and package identity are clean of known competitor trademarks.")
 
     print("=" * 65)
     if has_fatal_error and not audit_only:
