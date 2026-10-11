@@ -72,13 +72,13 @@ Team 2 tiếp nhận source code cần hoàn thành các hạng mục sau để 
    ```
 2. **Cắm nối Interface sẵn có trong Core (Zero Core Refactor):**
    - **In-App Purchases:** Cài đặt Adapter cho `IIAPService.cs`:
-     - `Purchase(string productId)` $ightarrow$ gọi `Purchases.PurchasePackage(...)`.
-     - `RestorePurchases()` $ightarrow$ gọi `Purchases.RestorePurchases(...)`.
+     - `Purchase(string productId)` $\rightarrow$ gọi `Purchases.PurchasePackage(...)`.
+     - `RestorePurchases()` $\rightarrow$ gọi `Purchases.RestorePurchases(...)`.
    - **Quảng Cáo Google Mobile Ads:** Cài đặt Adapter cho `IAdService.cs`:
-     - `ShowRewardedAd(Action onReward)` $ightarrow$ gọi `RewardedAd.Show(...)`.
+     - `ShowRewardedAd(Action onReward)` $\rightarrow$ gọi `RewardedAd.Show(...)`.
      - Kế thừa cơ chế Watchdog 8.0s timeout chống đơ màn hình khi No-Fill.
    - **Cloud Leaderboard (Supabase):** Cài đặt Adapter cho `ILeaderboardService.cs`:
-     - `SubmitScore(int score)` $ightarrow$ gọi REST API/RPC bảng `leaderboards`.
+     - `SubmitScore(int score)` $\rightarrow$ gọi REST API/RPC bảng `leaderboards`.
 3. **Cấu hình Production Keys trong `.env.local`:**
    - `ADMOB_APP_ID=ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy`
    - `REVENUECAT_API_KEY_ANDROID=goog_xxxxxxxxxxxxxxxxx`
