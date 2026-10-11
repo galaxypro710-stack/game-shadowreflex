@@ -58,7 +58,58 @@ namespace Game.Editor
                 return;
             }
             ConfigureReleaseKeystore();
-            BuildAndroid();
+            BuildAndroidInternal(isReleaseAab: true);
+        }
+
+        public static void BuildAndroid()
+        {
+            CheckStagingQuarantine(abortIfViolation: false);
+            BuildAndroidInternal(isReleaseAab: false);
+        }
+
+        private static void BuildAndroidInternal(bool isReleaseAab)
+        {
+            string cleanGameName = string.IsNullOrEmpty(PlayerSettings.productName) 
+                ? "GameRelease" 
+                : PlayerSettings.productName.Replace(" ", "");
+
+            string formatName = isReleaseAab ? "AAB (Google Play Store Bundle)" : "APK (Internal R&D)";
+            Debug.Log($"[BuildScript] Bắt đầu tiến trình Build Android {formatName} headless cho: {cleanGameName}...");
+            Directory.CreateDirectory("Builds/Android");
+
+            // Đảm bảo cấu hình Android chuẩn Store
+            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
+            PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7;
+            EditorUserBuildSettings.buildAppBundle = isReleaseAab;
+
+            string ext = isReleaseAab ? "aab" : "apk";
+            string outLocation = $"Builds/Android/{cleanGameName}.{ext}";
+
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
+            {
+                scenes = new[]
+                {
+                    "Assets/_Project/Scenes/Game.unity"
+                },
+                locationPathName = outLocation,
+                target = BuildTarget.Android,
+                options = BuildOptions.None
+            };
+
+            BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            BuildSummary summary = report.summary;
+
+            if (summary.result == BuildResult.Succeeded)
+            {
+                Debug.Log($"[BuildScript] Build Android {ext.ToUpper()} thành công mỹ mãn: {summary.totalSize} bytes ({summary.totalSize / (1024f * 1024f):F2} MB) tại {outLocation}");
+                EditorApplication.Exit(0);
+            }
+            else
+            {
+                Debug.LogError($"[BuildScript] Build {ext.ToUpper()} thất bại với {summary.totalErrors} lỗi.");
+                EditorApplication.Exit(1);
+            }
         }
 
         private static void ConfigureReleaseKeystore()
@@ -90,51 +141,6 @@ namespace Game.Editor
                     PlayerSettings.Android.keyaliasPass = pass;
                     Debug.Log($"[BuildScript] Cấu hình Keystore ký số độc lập thành công cho {cleanGameName} (Alias: {alias})");
                 }
-            }
-        }
-
-        public static void BuildAndroid()
-        {
-            CheckStagingQuarantine(abortIfViolation: false);
-
-            string cleanGameName = string.IsNullOrEmpty(PlayerSettings.productName) 
-                ? "GameRelease" 
-                : PlayerSettings.productName.Replace(" ", "");
-
-            Debug.Log($"[BuildScript] Bắt đầu tiến trình Build Android APK headless cho: {cleanGameName}...");
-            Directory.CreateDirectory("Builds/Android");
-
-            // Đảm bảo cấu hình Android chuẩn Store
-            PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
-            PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
-            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7;
-            EditorUserBuildSettings.buildAppBundle = false;
-
-            string apkLocation = $"Builds/Android/{cleanGameName}.apk";
-
-            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
-            {
-                scenes = new[]
-                {
-                    "Assets/_Project/Scenes/Game.unity"
-                },
-                locationPathName = apkLocation,
-                target = BuildTarget.Android,
-                options = BuildOptions.None
-            };
-
-            BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
-            BuildSummary summary = report.summary;
-
-            if (summary.result == BuildResult.Succeeded)
-            {
-                Debug.Log($"[BuildScript] Build Android APK thành công mỹ mãn: {summary.totalSize} bytes ({summary.totalSize / (1024f * 1024f):F2} MB) tại {apkLocation}");
-                EditorApplication.Exit(0);
-            }
-            else
-            {
-                Debug.LogError($"[BuildScript] Build APK thất bại với {summary.totalErrors} lỗi.");
-                EditorApplication.Exit(1);
             }
         }
 
