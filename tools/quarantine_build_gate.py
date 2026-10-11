@@ -148,16 +148,18 @@ def run_gate(project_path, is_release=False, audit_only=False):
 
     # 1. Staging Check
     staging_files, manifest_unreplaced = check_staging_assets(project_path, is_release)
-    print(f"[*] 1. Staging Asset Quarantine: {len(staging_files)} raw staging files detected.")
-    if is_release and staging_files:
+    print(f"[*] 1. Staging Asset Quarantine: {len(staging_files)} raw staging files, {len(manifest_unreplaced)} staging manifest groups.")
+    if is_release and (staging_files or manifest_unreplaced):
         print("    [!] FATAL: Staging assets present in Release Candidate mode!")
-        for sf in staging_files[:5]:
-            print(f"        - {sf}")
-        if len(staging_files) > 5:
-            print(f"        ... and {len(staging_files) - 5} more files.")
+        if staging_files:
+            for sf in staging_files[:5]:
+                print(f"        - Staging File: {sf}")
+        if manifest_unreplaced:
+            for mu in manifest_unreplaced[:5]:
+                print(f"        - Unreplaced Group: {mu}")
         has_fatal_error = True
-    elif staging_files:
-        print(f"    [INFO] Staging files permitted for Internal R&D (V1/V2). Reskin required before V3 Store Release.")
+    elif staging_files or manifest_unreplaced:
+        print(f"    [INFO] Staging files/manifest active for Internal R&D (V1/V2). Reskin required before V3 Store Release.")
     else:
         print("    [+] PASS: 0 staging assets. Clean for store release.")
 
