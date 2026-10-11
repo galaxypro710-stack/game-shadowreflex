@@ -59,10 +59,31 @@ Team 2 tiếp nhận source code cần hoàn thành các hạng mục sau để 
 - [ ] Gắn Live RevenueCat IAP mua vũ khí hoàng gia và thẻ bài kỹ năng
 - [ ] Thêm Boss Fight đa tầng với nhịp tấn công phức tạp
 
-### B. Quy trình Bật Live Monetization:
-1. Mở file ScriptableObject cấu hình tại: `Assets/_Project/Data/GameConfig.asset` (hoặc cấu hình tương đương trong Core).
-2. Tắt cờ `IsMockMode = false`.
-3. Nhập các ID sản phẩm thật từ Google Play Console và AdMob Console.
+### B. Quy trình Bật Live Monetization & Cài Đặt SDK Thật:
+1. **Nạp Package vào `Packages/manifest.json`:**
+   Team 2 mở `Packages/manifest.json` và bổ sung các gói SDK chính thức:
+   ```json
+   {
+     "dependencies": {
+       "com.google.ads.mobile": "9.2.0",
+       "com.revenuecat.purchases-unity": "5.4.0"
+     }
+   }
+   ```
+2. **Cắm nối Interface sẵn có trong Core (Zero Core Refactor):**
+   - **In-App Purchases:** Cài đặt Adapter cho `IIAPService.cs`:
+     - `Purchase(string productId)` $ightarrow$ gọi `Purchases.PurchasePackage(...)`.
+     - `RestorePurchases()` $ightarrow$ gọi `Purchases.RestorePurchases(...)`.
+   - **Quảng Cáo Google Mobile Ads:** Cài đặt Adapter cho `IAdService.cs`:
+     - `ShowRewardedAd(Action onReward)` $ightarrow$ gọi `RewardedAd.Show(...)`.
+     - Kế thừa cơ chế Watchdog 8.0s timeout chống đơ màn hình khi No-Fill.
+   - **Cloud Leaderboard (Supabase):** Cài đặt Adapter cho `ILeaderboardService.cs`:
+     - `SubmitScore(int score)` $ightarrow$ gọi REST API/RPC bảng `leaderboards`.
+3. **Cấu hình Production Keys trong `.env.local`:**
+   - `ADMOB_APP_ID=ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy`
+   - `REVENUECAT_API_KEY_ANDROID=goog_xxxxxxxxxxxxxxxxx`
+   - `SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co`
+   - `SUPABASE_ANON_KEY=eyJh......`
 
 ---
 
