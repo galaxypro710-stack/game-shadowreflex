@@ -11,8 +11,6 @@
 [Uu]ser[Ss]ettings/
 [Mm]emoryCaptures/
 [Aa]ssets/AssetStoreTools*
-.utmp/
-*.log
 
 # Visual Studio / Rider / VSCode Cache
 .vs/
@@ -31,9 +29,24 @@
 *.opendb
 *.VC.db
 
-# OS Generated
+# Build Logs & Unity Batch Logs
+*.log
+*.log.*
+Logs/
+[Ll]ogs/
+
+# Android Native Symbol Cache (Unity 6 / Gradle CMake)
+.utmp/
+[._]utmp/
+**/[._]utmp/
+**/.utmp/
+
+# OS & Python Cache
 .DS_Store
 Thumbs.db
+__pycache__/
+tools/__pycache__/
+**/*__pycache__*
 
 # Secrets & Environment (Offline-First Hygiene)
 .env
@@ -43,4 +56,5 @@ Thumbs.db
 *.jks
 credentials.json
 google-services.json
+google-services*.json*
 GoogleService-Info.plist
