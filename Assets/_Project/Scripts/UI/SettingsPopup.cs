@@ -14,8 +14,8 @@ namespace Game.UI
 
     public enum GameTheme
     {
-        Pyramid,
-        Ocean
+        ShadowGrove,
+        MoonlitDojo
     }
 
     /// <summary>
@@ -25,7 +25,7 @@ namespace Game.UI
     /// 2. Bật/Tắt Hiệu ứng âm thanh (SFX)
     /// 3. Bật/Tắt Rung (Haptic/Vibration)
     /// 4. Chuyển đổi Ngôn ngữ (Tiếng Việt 🇻🇳 / English 🇬🇧)
-    /// 5. Chuyển đổi Chủ đề (Kim Tự Tháp 🏛️ / Đại Dương 🌊)
+    /// 5. Chuyển đổi Chủ đề (Rừng Trúc Đêm 🎋 / Võ Đường Trăng 🌙)
     /// 6. Chơi lại ván (Restart) hoặc Về trang chủ (Home)
     /// </summary>
     public class SettingsPopup : MonoBehaviour
@@ -54,17 +54,17 @@ namespace Game.UI
         [Header("UI Text Localized")]
         [SerializeField] private Text _titleText;
 
-        public const string PrefBgm = "TilePyramid_BgmEnabled";
-        public const string PrefSfx = "TilePyramid_SfxEnabled";
-        public const string PrefVib = "TilePyramid_VibrationEnabled";
-        public const string PrefLang = "TilePyramid_Language";
-        public const string PrefTheme = "TilePyramid_Theme";
+        public const string PrefBgm = "ShadowReflex_BgmEnabled";
+        public const string PrefSfx = "ShadowReflex_SfxEnabled";
+        public const string PrefVib = "ShadowReflex_VibrationEnabled";
+        public const string PrefLang = "ShadowReflex_Language";
+        public const string PrefTheme = "ShadowReflex_Theme";
 
         private bool _isBgmOn = true;
         private bool _isSfxOn = true;
         private bool _isVibrationOn = true;
         private GameLanguage _currentLanguage = GameLanguage.Vietnamese;
-        private GameTheme _currentTheme = GameTheme.Pyramid;
+        private GameTheme _currentTheme = GameTheme.ShadowGrove;
 
         public static event Action<GameLanguage> OnLanguageChanged;
         public static event Action<GameTheme> OnThemeChanged;
@@ -106,7 +106,7 @@ namespace Game.UI
             _isSfxOn = PlayerPrefs.GetInt(PrefSfx, 1) == 1;
             _isVibrationOn = PlayerPrefs.GetInt(PrefVib, 1) == 1;
             _currentLanguage = (GameLanguage)PlayerPrefs.GetInt(PrefLang, (int)GameLanguage.Vietnamese);
-            _currentTheme = (GameTheme)PlayerPrefs.GetInt(PrefTheme, (int)GameTheme.Pyramid);
+            _currentTheme = (GameTheme)PlayerPrefs.GetInt(PrefTheme, (int)GameTheme.ShadowGrove);
         }
 
         public void Open()
@@ -168,7 +168,7 @@ namespace Game.UI
 
         private void SwitchTheme()
         {
-            _currentTheme = (_currentTheme == GameTheme.Pyramid) ? GameTheme.Ocean : GameTheme.Pyramid;
+            _currentTheme = (_currentTheme == GameTheme.ShadowGrove) ? GameTheme.MoonlitDojo : GameTheme.ShadowGrove;
             PlayerPrefs.SetInt(PrefTheme, (int)_currentTheme);
             PlayerPrefs.Save();
 
@@ -228,9 +228,9 @@ namespace Game.UI
 
             if (_themeText != null)
             {
-                bool isOcean = _currentTheme == GameTheme.Ocean;
-                _themeText.text = isVi ? (isOcean ? "Chủ đề: Đại Dương 🌊" : "Chủ đề: Kim Tự Tháp 🏛️")
-                                       : (isOcean ? "Theme: Ocean 🌊" : "Theme: Pyramid 🏛️");
+                bool isDojo = _currentTheme == GameTheme.MoonlitDojo;
+                _themeText.text = isVi ? (isDojo ? "Chủ đề: Võ Đường Trăng 🌙" : "Chủ đề: Rừng Trúc Đêm 🎋")
+                                       : (isDojo ? "Theme: Moonlit Dojo 🌙" : "Theme: Bamboo Night 🎋");
             }
         }
     }

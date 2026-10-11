@@ -16,8 +16,8 @@ namespace Game.Features.Monetization
     {
         public static RevenueCatIAPManager Instance { get; private set; }
 
-        public const string ProductNoAds = "tilepyramid.noads";
-        public const string ProductBoosterSmall = "tilepyramid.boosters.small";
+        public const string ProductNoAds = "shadowreflex.noads";
+        public const string ProductBoosterSmall = "shadowreflex.boosters.small";
 
         [Header("RevenueCat Configuration")]
         [SerializeField] private string _androidApiKey = "goog_sample_test_revenuecat_key";

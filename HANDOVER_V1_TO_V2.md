@@ -28,6 +28,8 @@ Bản Version 1 đã hoàn thành đầy đủ Core Gameplay Loop, tích hợp t
 - [x] **Slomo Bullet Time và vệt chém kiếm katana khi parry thành công**
 - [x] **HMAC-SHA256 Encrypted SaveService**
 - [x] **Offline-First Mock AdMob & RevenueCat**
+- [x] **Zero Cross-Pollution & Clean Blind Spots (100% PlayerPrefs, Seed Data & IAP Products chuẩn hóa `ShadowReflex_`)**
+- [x] **Asset Technical Contract (Quy định 100 PPU, Canvas 256x256, Pivot Center, Audio 44.1kHz trong `ASSET_REPLACEMENT_MANIFEST.md`)**
 
 ---
 

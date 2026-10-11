@@ -12,14 +12,14 @@ namespace Game.Features.Leaderboard
     /// Trình quản lý Bảng xếp hạng toàn cầu tích hợp Supabase REST API & Local Cache.
     /// Tuân thủ nguyên tắc Standalone Offline-First:
     /// - Khi có mạng và cấu hình Supabase: Đồng bộ bảng xếp hạng realtime qua Supabase PostgREST.
-    /// - Khi ngoại tuyến / Desktop Mock: Tự động chuyển đổi sang Local Cache (được ký số HMAC-SHA256) với danh sách các huyền thoại Ai Cập.
+    /// - Khi ngoại tuyến / Desktop Mock: Tự động chuyển đổi sang Local Cache (được ký số HMAC-SHA256) với danh sách võ sĩ bóng đêm (Shadow Warriors).
     /// </summary>
     public class SupabaseLeaderboardManager : MonoBehaviour, ILeaderboardService
     {
         public static SupabaseLeaderboardManager Instance { get; private set; }
 
-        public const string GamerTagKey = "TilePyramid_GamerTag";
-        public const string LocalLeaderboardCacheKey = "TilePyramid_LocalLeaderboardCache";
+        public const string GamerTagKey = "ShadowReflex_GamerTag";
+        public const string LocalLeaderboardCacheKey = "ShadowReflex_LocalLeaderboardCache";
 
         [Header("Supabase Configuration")]
         [SerializeField] private string _supabaseUrl = "https://your-project-id.supabase.co";
@@ -40,10 +40,10 @@ namespace Game.Features.Leaderboard
 
         public event Action<List<LeaderboardEntry>> OnLeaderboardUpdated;
 
-        private readonly string[] AncientEgyptianTitles = new[]
+        private readonly string[] ShadowWarriorTitles = new[]
         {
-            "Pharaoh", "Ramses", "Tutankhamun", "Cleopatra", "Nefertiti", 
-            "Anubis", "Horus", "Osiris", "Hatshepsut", "Thutmose", "Ra"
+            "Kage", "Ronin", "Shinobi", "Samurai", "Bushi", "Sensei", 
+            "Daimyo", "Shogun", "Ninja", "Kunoichi", "BladeMaster", "ShadowFang"
         };
 
         private void Awake()
@@ -69,7 +69,7 @@ namespace Game.Features.Leaderboard
             }
             else
             {
-                string title = AncientEgyptianTitles[UnityEngine.Random.Range(0, AncientEgyptianTitles.Length)];
+                string title = ShadowWarriorTitles[UnityEngine.Random.Range(0, ShadowWarriorTitles.Length)];
                 int num = UnityEngine.Random.Range(100, 999);
                 _currentPlayerGamerTag = $"{title}_{num}";
                 PlayerPrefs.SetString(GamerTagKey, _currentPlayerGamerTag);
@@ -94,16 +94,16 @@ namespace Game.Features.Leaderboard
             {
                 var seedList = new List<LeaderboardEntry>
                 {
-                    new LeaderboardEntry(1, "Ramses_II", 12500, 10, "2026-09-20"),
-                    new LeaderboardEntry(2, "Nefertiti_77", 9800, 8, "2026-09-20"),
-                    new LeaderboardEntry(3, "Thutmose_III", 8400, 7, "2026-09-21"),
-                    new LeaderboardEntry(4, "Tutankhamun_01", 7200, 6, "2026-09-21"),
-                    new LeaderboardEntry(5, "Cleopatra_VIP", 6300, 5, "2026-09-21"),
-                    new LeaderboardEntry(6, "Anubis_Guardian", 5400, 5, "2026-09-21"),
-                    new LeaderboardEntry(7, "Horus_Sky", 4600, 4, "2026-09-21"),
-                    new LeaderboardEntry(8, "Osiris_Eternal", 3900, 3, "2026-09-21"),
-                    new LeaderboardEntry(9, "Sphinx_Riddle", 3100, 3, "2026-09-21"),
-                    new LeaderboardEntry(10, "Ra_SunGod", 2500, 2, "2026-09-21")
+                    new LeaderboardEntry(1, "Kage_Shadow", 12500, 10, "2026-10-01"),
+                    new LeaderboardEntry(2, "Ronin_Zero", 9800, 8, "2026-10-01"),
+                    new LeaderboardEntry(3, "Hattori_Hanzo", 8400, 7, "2026-10-02"),
+                    new LeaderboardEntry(4, "Musashi_Blade", 7200, 6, "2026-10-02"),
+                    new LeaderboardEntry(5, "Yukimura_Spear", 6300, 5, "2026-10-02"),
+                    new LeaderboardEntry(6, "Kunoichi_Mai", 5400, 5, "2026-10-02"),
+                    new LeaderboardEntry(7, "Sasuke_Wind", 4600, 4, "2026-10-02"),
+                    new LeaderboardEntry(8, "Genji_Crest", 3900, 3, "2026-10-03"),
+                    new LeaderboardEntry(9, "Shadow_Striker", 3100, 3, "2026-10-03"),
+                    new LeaderboardEntry(10, "Nobunaga_Flame", 2500, 2, "2026-10-03")
                 };
 
                 SaveLocalCache(seedList);

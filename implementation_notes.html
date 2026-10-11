@@ -74,9 +74,19 @@
   <div class="card">
     <h2>4. 🛠️ Maintenance & V3 Release Notes (Hướng dẫn Bàn giao cho Team Art)</h2>
     <ul>
-      <li>Toàn bộ 19 Staging Assets (13 Sprites + 6 Audios) đã được ghi nhận tự động vào <code>ASSET_REPLACEMENT_MANIFEST.md</code>.</li>
+      <li>Toàn bộ 19 Staging Assets (13 Sprites + 6 Audios) đã được ghi nhận tự động vào <code>ASSET_REPLACEMENT_MANIFEST.md</code> kèm ràng buộc kỹ thuật chặt chẽ (PPU 100, Pivot Center 0.5, 0.5, Audio 44.1kHz).</li>
       <li>Trước khi xuất xưởng Store ở Version 3, Team Art chỉ cần vẽ các bộ sprite độc quyền mới đúng kích thước (256x256 cho nhân vật, 540x960 cho nền) và thay thế 1:1 trong <code>Assets/_Project/Art/</code>.</li>
-      <li>Rollback Anchor đã lưu tại commit: <code>8dbe9ac</code> trong <code>CONTEXT.md</code>.</li>
+      <li>Rollback Anchor hiện tại: <code>6dc3ead</code> trong <code>CONTEXT.md</code>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>5. 🧹 V1 Standardization & Blind Spot Purge (2026-10-11)</h2>
+    <ul>
+      <li><strong>Triệt tiêu Cross-Pollution:</strong> Dọn sạch toàn bộ 100% key PlayerPrefs còn sót từ scaffold cũ (<code>TilePyramid_*</code>) chuyển thành <code>ShadowReflex_*</code> trong <code>SettingsPopup.cs</code> và <code>SupabaseLeaderboardManager.cs</code>.</li>
+      <li><strong>Chuẩn hóa IAP Products:</strong> Chuyển <code>tilepyramid.noads</code> & <code>tilepyramid.boosters.small</code> thành <code>shadowreflex.noads</code> & <code>shadowreflex.boosters.small</code> trong <code>RevenueCatIAPManager.cs</code>.</li>
+      <li><strong>Thay thế Mock Seed Data:</strong> Đổi seed data Pharaoh Ai Cập thành danh sách các võ sĩ bóng đêm (Shadow Warriors: Kage_Shadow, Ronin_Zero, Hattori_Hanzo, Musashi_Blade, v.v.).</li>
+      <li><strong>Xác thực Kiểm dịch (Quarantine Gate):</strong> Đạt Exit Code 0 trên <code>python tools/quarantine_build_gate.py --audit-only</code> với 0 domain lậu, 0 trademark đối thủ, và 0 font vi phạm.</li>
     </ul>
   </div>
 
