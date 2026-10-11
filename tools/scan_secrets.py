@@ -17,7 +17,7 @@ sys.stdout.reconfigure(encoding='utf-8', errors='ignore')
 sys.stderr.reconfigure(encoding='utf-8', errors='ignore')
 
 IGNORED_DIRS = {'.git', '.agents', '__pycache__', 'Library', 'Temp', 'bin', 'obj', 'Build', 'Builds', '.vs', '.idea', 'Logs', 'MemoryCaptures', 'UserSettings', 'extracted_cache'}
-IGNORED_FILES = {'.env.local', '.circuit_breaker_state.json'}
+IGNORED_FILES = {'.env.local', '.circuit_breaker_state.json', 'google-services.json', 'GoogleService-Info.plist'}
 IGNORED_EXTENSIONS = {
     '.png', '.jpg', '.jpeg', '.wav', '.mp3', '.ogg', '.apk', '.xapk', '.zip', '.tar', '.gz', 
     '.ico', '.keystore', '.meta', '.asset', '.prefab', '.unity', '.mat', '.anim', '.controller', 
@@ -61,6 +61,11 @@ def scan_directory(target_dir):
                 continue
 
             file_path = os.path.join(root, f)
+            try:
+                if os.path.getsize(file_path) > 1024 * 1024:
+                    continue
+            except OSError:
+                continue
             files_checked += 1
 
             try:

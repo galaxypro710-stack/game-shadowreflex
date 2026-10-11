@@ -13,16 +13,90 @@ namespace Game.Editor
     /// </summary>
     public class BuildScript
     {
-        public static void AutoQACheck()
+        /// <summary>
+        /// Kiểm dịch tài nguyên Staging: Đảm bảo không phát hành APK Store khi chưa reskin 100% tài nguyên gốc.
+        /// </summary>
+        public static bool CheckStagingQuarantine(bool abortIfViolation = false)
         {
-            Debug.Log("[BuildScript] === BẮT ĐẦU AUTO QA CHECK CHO SHADOWREFLEX ===");
-            SceneSetupHelper.SetupScene();
-            CoreValidationHelper.ValidateCore();
-            EditorApplication.Exit(0);
+            string[] checkPaths = new[] { "Assets/Art/Staging_Reference", "Assets/Staging" };
+            int stagingCount = 0;
+
+            foreach (var path in checkPaths)
+            {
+                if (Directory.Exists(path))
+                {
+                    string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                    foreach (var file in files)
+                    {
+                        if (!file.EndsWith(".meta")) stagingCount++;
+                    }
+                }
+            }
+
+            if (stagingCount > 0)
+            {
+                string warningMsg = $"[BuildScript] QUARANTINE NOTICE: Phát hiện {stagingCount} tài nguyên staging trong Assets/Art/Staging_Reference. " +
+                                     "Tài nguyên này hợp lệ cho V1/V2 Internal R&D, nhưng BẮT BUỘC phải được thay thế ở V3 trước khi Release Store.";
+                if (abortIfViolation)
+                {
+                    Debug.LogError($"[BuildScript] QUARANTINE ABORT: {warningMsg} Hủy tiến trình build Release để phòng thủ Store Anti-Ban!");
+                    return false;
+                }
+                else
+                {
+                    Debug.LogWarning(warningMsg);
+                }
+            }
+            return true;
+        }
+
+        public static void BuildAndroidRelease()
+        {
+            if (!CheckStagingQuarantine(abortIfViolation: true))
+            {
+                EditorApplication.Exit(1);
+                return;
+            }
+            ConfigureReleaseKeystore();
+            BuildAndroid();
+        }
+
+        private static void ConfigureReleaseKeystore()
+        {
+            string cleanGameName = string.IsNullOrEmpty(PlayerSettings.productName) 
+                ? "GameRelease" 
+                : PlayerSettings.productName.Replace(" ", "");
+
+            string keystoreDir = Path.Combine(Directory.GetCurrentDirectory(), "keystore");
+            string keystoreFile = Path.Combine(keystoreDir, $"{cleanGameName}.keystore");
+            string infoFile = Path.Combine(keystoreDir, "keystore.info.txt");
+
+            if (File.Exists(keystoreFile) && File.Exists(infoFile))
+            {
+                string alias = null;
+                string pass = null;
+                foreach (var line in File.ReadAllLines(infoFile))
+                {
+                    if (line.StartsWith("Alias:")) alias = line.Substring("Alias:".Length).Trim();
+                    else if (line.StartsWith("Password:")) pass = line.Substring("Password:".Length).Trim();
+                }
+
+                if (!string.IsNullOrEmpty(alias) && !string.IsNullOrEmpty(pass))
+                {
+                    PlayerSettings.Android.useCustomKeystore = true;
+                    PlayerSettings.Android.keystoreName = keystoreFile;
+                    PlayerSettings.Android.keystorePass = pass;
+                    PlayerSettings.Android.keyaliasName = alias;
+                    PlayerSettings.Android.keyaliasPass = pass;
+                    Debug.Log($"[BuildScript] Cấu hình Keystore ký số độc lập thành công cho {cleanGameName} (Alias: {alias})");
+                }
+            }
         }
 
         public static void BuildAndroid()
         {
+            CheckStagingQuarantine(abortIfViolation: false);
+
             string cleanGameName = string.IsNullOrEmpty(PlayerSettings.productName) 
                 ? "GameRelease" 
                 : PlayerSettings.productName.Replace(" ", "");
@@ -31,22 +105,12 @@ namespace Game.Editor
             Directory.CreateDirectory("Builds/Android");
 
             // Đảm bảo cấu hình Android chuẩn Store
-            PlayerSettings.companyName = "GalaxyPro Studio";
-            PlayerSettings.productName = "Shadow Reflex";
-            PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "com.galaxypro.shadowreflex");
             PlayerSettings.Android.minSdkVersion = AndroidSdkVersions.AndroidApiLevel26;
             PlayerSettings.Android.targetSdkVersion = AndroidSdkVersions.AndroidApiLevelAuto;
-            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
+            PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64 | AndroidArchitecture.ARMv7;
             EditorUserBuildSettings.buildAppBundle = false;
 
-            // Khóa cứng màn hình Portrait dọc chuẩn 9:16
-            PlayerSettings.defaultInterfaceOrientation = UIOrientation.Portrait;
-            PlayerSettings.allowedAutorotateToPortrait = true;
-            PlayerSettings.allowedAutorotateToPortraitUpsideDown = false;
-            PlayerSettings.allowedAutorotateToLandscapeLeft = false;
-            PlayerSettings.allowedAutorotateToLandscapeRight = false;
-
-            string apkLocation = $"Builds/Android/ShadowReflex.apk";
+            string apkLocation = $"Builds/Android/{cleanGameName}.apk";
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
