@@ -1,26 +1,25 @@
-﻿# GOAL.md: Káº¾ HOáº CH & TIÃŠU CHUáº¨N NGHIá»†M THU ShadowReflex
+# GOAL.md: KẾ HOẠCH & TIÊU CHUẨN NGHIỆM THU ShadowReflex
 
-> **Má»¥c tiÃªu:** TÃ¡i táº¡o thÃ nh cÃ´ng Core Gameplay Loop & Xuáº¥t xÆ°á»Ÿng Android Release APK cá»§a ShadowReflex  
-> **NguyÃªn táº¯c:** Evidence-First, 0 Console Errors, AutoQA PASS 100%, Build Pass Exit Code 0  
-> **Ãp dá»¥ng:** `/ai-copilot-alignment`, `/behavior-model-debugger`, `/harness-engineering`  
+> **Mục tiêu:** Tái tạo thành công Core Gameplay Loop & Xuất xưởng Android Release APK của ShadowReflex  
+> **Nguyên tắc:** Evidence-First, 0 Console Errors, AutoQA PASS 100%, Build Pass Exit Code 0  
+> **Áp dụng:** `/ai-copilot-alignment`, `/behavior-model-debugger`, `/harness-engineering`  
 
 ---
 
-## ðŸŽ¯ DANH SÃCH MILESTONES Cá»T LÃ•I
+## 🎯 DANH SÁCH MILESTONES CỐT LÕI (CORE V1 - 100% PASS)
 
-- [ ] **Milestone 1: Khá»Ÿi Táº¡o & Náº¡p Cáº¥u HÃ¬nh MÃ n ChÆ¡i**
-  - Verify Scene `Assets/_Project/Scenes/Game.unity` náº¡p Ä‘á»§ Core Systems (GameManager, AudioManager, SaveService, ThemeManager).
-  - Khá»Ÿi táº¡o thÆ° má»¥c Data, load cáº¥u hÃ¬nh JSON/CSV Ä‘á»™c quyá»n.
-  - Kiá»ƒm chá»©ng: `python tools/run_unity.py -g ShadowReflex -m Game.Editor.BuildScript.AutoQACheck` -> Exit Code 0.
+- [x] **Milestone 1: Khởi Tạo & Nạp Cấu Hình Màn Chơi**
+  - Verify Scene `Assets/_Project/Scenes/Game.unity` nạp đủ Core Systems (GameManager, AudioManager, SaveService, ThemeManager).
+  - Khởi tạo thư mục Data, load cấu hình JSON/CSV độc quyền.
+  - Kiểm chứng: `python tools/run_unity.py -g ShadowReflex -m Game.Editor.BuildScript.AutoQACheck` -> Exit Code 0.
 
-- [ ] **Milestone 2: Triá»ƒn Khai Gameplay Mechanics & Input Interaction**
-  - Thi cÃ´ng FSM Gameplay State Machine Ä‘á»™c quyá»n theo Archetype `timing_action_combat`.
-  - CÆ¡ cháº¿ cháº¡m/vuá»‘t/kÃ©o tháº£ Ä‘Æ°á»£c clamp an toÃ n, cÃ³ timeout watchdog chá»‘ng káº¹t tÆ°Æ¡ng tÃ¡c.
-  - TÃ­ch há»£p hiá»‡u á»©ng Ã¢m thanh vÃ  háº¡t Particle FX.
+- [x] **Milestone 2: Triển Khai Gameplay Mechanics & Input Interaction**
+  - Thi công FSM Gameplay State Machine độc quyền theo Archetype `timing_action_combat`.
+  - Cơ chế chạm/vuốt/kéo thả được clamp an toàn, có timeout watchdog chống kẹt tương tác.
+  - Tích hợp hiệu ứng âm thanh và hạt Particle FX.
 
-- [ ] **Milestone 3: Nghiá»‡m Thu Tá»± Äá»™ng & ÄÃ³ng GÃ³i Xuáº¥t XÆ°á»Ÿng (Release Packaging)**
-  - AutoQA Check 5/5 tiÃªu chÃ­ PASS 100%.
-  - BiÃªn dá»‹ch Standalone Windows: `Builds/Windows/ShadowReflex.exe`.
-  - Sinh Keystore riÃªng & biÃªn dá»‹ch Android Release APK: `Builds/Android/ShadowReflex.apk`.
-  - Kiá»ƒm tra tÃ­nh toÃ n váº¹n `.meta` (zero orphan) vÃ  quÃ©t sáº¡ch secret (0 token rÃ² rá»‰).
-
+- [x] **Milestone 3: Nghiệm Thu Tự Động & Đóng Gói Xuất Xưởng (Release Packaging)**
+  - AutoQA Check 5/5 tiêu chí PASS 100%.
+  - Biên dịch Standalone Windows: `Builds/Windows/ShadowReflex.exe`.
+  - Sinh Keystore riêng & biên dịch Android Release APK: `Builds/Android/ShadowReflex.apk` (**46.20 MB**).
+  - Kiểm tra tính toàn vẹn `.meta` (zero orphan) và quét sạch secret (0 token rò rỉ).
