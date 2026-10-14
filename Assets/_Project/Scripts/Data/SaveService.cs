@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
@@ -6,8 +6,8 @@ using UnityEngine;
 namespace Game.Data
 {
     /// <summary>
-    /// Thuáº­t toÃ¡n chuyá»ƒn Ä‘á»•i JSON thuáº§n tÃºy (Pure Logic) cho há»‡ thá»‘ng lÆ°u trá»¯.
-    /// Cho phÃ©p Unit Testing Ä‘á»™c láº­p khÃ´ng phá»¥ thuá»™c vÃ o PlayerPrefs cá»§a Unity.
+    /// Thuật toán chuyển đổi JSON thuần túy (Pure Logic) cho hệ thống lưu trữ.
+    /// Cho phép Unit Testing độc lập không phụ thuộc vào PlayerPrefs của Unity.
     /// </summary>
     public static class SaveSerializer
     {
@@ -26,25 +26,25 @@ namespace Game.Data
             }
             catch (Exception ex)
             {
-                Debug.LogError($"[SaveSerializer] Lá»—i phÃ¢n tÃ­ch JSON SaveData: {ex.Message}");
+                Debug.LogError($"[SaveSerializer] Lỗi phân tích JSON SaveData: {ex.Message}");
                 return null;
             }
         }
     }
 
     /// <summary>
-    /// Dá»‹ch vá»¥ quáº£n trá»‹ lÆ°u trá»¯ tráº¡ng thÃ¡i trÃ² chÆ¡i xuá»‘ng PlayerPrefs (hoáº·c Cloud Save).
-    /// TÃ­ch há»£p cÆ¡ cháº¿ mÃ£ hÃ³a xÃ¡c thá»±c toÃ n váº¹n dá»¯ liá»‡u báº±ng chá»¯ kÃ½ sá»‘ HMAC-SHA256 chá»‘ng hack Ä‘iá»ƒm/F5.
-    /// Chuáº©n Universal Core: KhÃ´ng phá»¥ thuá»™c vÃ o báº¥t ká»³ thá»ƒ loáº¡i gameplay nÃ o.
+    /// Dịch vụ quản trị lưu trữ trạng thái trò chơi xuống PlayerPrefs (hoặc Cloud Save).
+    /// Tích hợp cơ chế mã hóa xác thực toàn vẹn dữ liệu bằng chữ ký số HMAC-SHA256 chống hack điểm/F5.
+    /// Chuẩn Universal Core: Không phụ thuộc vào bất kỳ thể loại gameplay nào.
     /// </summary>
     public class SaveService : MonoBehaviour
     {
-        public const string SaveKey = "GameCore_SavedData";
-        public const string HighScoreKey = "GameCore_HighScore";
-        public const string CoinsKey = "GameCore_Coins";
-        public const string NoAdsKey = "GameCore_NoAds";
+        public const string SaveKey = "ShadowReflex_SavedData";
+        public const string HighScoreKey = "ShadowReflex_HighScore";
+        public const string CoinsKey = "ShadowReflex_Coins";
+        public const string NoAdsKey = "ShadowReflex_NoAds";
 
-        // Salt máº·c Ä‘á»‹nh cá»§a Template Core (sáº½ Ä‘Æ°á»£c scaffold_new_game.ps1 sinh ngáº«u nhiÃªn cho tá»«ng game con)
+        // Salt mặc định của Template Core (sẽ được scaffold_new_game.ps1 sinh ngẫu nhiên cho từng game con)
         private static readonly byte[] HmacSalt = Encoding.UTF8.GetBytes("ShadowReflex_SecretSalt_a2abd944225b40c79ab61956154f42d9_v1");
 
         public static SaveService Instance { get; private set; }
@@ -62,7 +62,7 @@ namespace Game.Data
         }
 
         /// <summary>
-        /// Táº¡o chá»¯ kÃ½ sá»‘ HMAC-SHA256 cho chuá»—i dá»¯ liá»‡u Ä‘áº§u vÃ o.
+        /// Tạo chữ ký số HMAC-SHA256 cho chuỗi dữ liệu đầu vào.
         /// </summary>
         public static string ComputeHmac(string payload)
         {
@@ -75,7 +75,7 @@ namespace Game.Data
         }
 
         /// <summary>
-        /// Kiá»ƒm tra tÃ­nh há»£p lá»‡ cá»§a chá»¯ kÃ½ HMAC Ä‘á»‘i chiáº¿u vá»›i dá»¯ liá»‡u.
+        /// Kiểm tra tính hợp lệ của chữ ký HMAC đối chiếu với dữ liệu.
         /// </summary>
         public static bool VerifyHmac(string payload, string storedSignature)
         {
@@ -85,7 +85,7 @@ namespace Game.Data
         }
 
         /// <summary>
-        /// LÆ°u tráº¡ng thÃ¡i phiÃªn chÆ¡i hiá»‡n táº¡i kÃ¨m chá»¯ kÃ½ HMAC báº£o vá»‡.
+        /// Lưu trạng thái phiên chơi hiện tại kèm chữ ký HMAC bảo vệ.
         /// </summary>
         public void SaveGame(GameSaveData data)
         {
@@ -95,21 +95,21 @@ namespace Game.Data
             PlayerPrefs.SetString(SaveKey, json);
             PlayerPrefs.SetString(SaveKey + "_HMAC", ComputeHmac(json));
 
-            // Cáº­p nháº­t HighScore náº¿u vÆ°á»£t ká»· lá»¥c
+            // Cập nhật HighScore nếu vượt kỷ lục
             int currentHigh = GetHighScore();
             if (data.score > currentHigh)
             {
                 SetSecureInt(HighScoreKey, data.score);
             }
 
-            // Äá»“ng bá»™ coins
+            // Đồng bộ coins
             SetSecureInt(CoinsKey, data.coins);
 
             PlayerPrefs.Save();
         }
 
         /// <summary>
-        /// Náº¡p láº¡i tráº¡ng thÃ¡i Ä‘Ã£ lÆ°u sau khi xÃ¡c thá»±c chá»¯ kÃ½ HMAC toÃ n váº¹n.
+        /// Nạp lại trạng thái đã lưu sau khi xác thực chữ ký HMAC toàn vẹn.
         /// </summary>
         public GameSaveData LoadGame()
         {
@@ -120,7 +120,7 @@ namespace Game.Data
 
             if (!VerifyHmac(json, sig))
             {
-                Debug.LogWarning("[SaveService TAMPER DETECTED] Chá»¯ kÃ½ HMAC khÃ´ng khá»›p hoáº·c dá»¯ liá»‡u bá»‹ can thiá»‡p trÃ¡i phÃ©p! Tá»± Ä‘á»™ng há»§y save.");
+                Debug.LogWarning("[SaveService TAMPER DETECTED] Chữ ký HMAC không khớp hoặc dữ liệu bị can thiệp trái phép! Tự động hủy save.");
                 ClearSaveData();
                 return null;
             }
@@ -129,7 +129,7 @@ namespace Game.Data
         }
 
         /// <summary>
-        /// Kiá»ƒm tra cÃ³ vÃ¡n Ä‘áº¥u nÃ o Ä‘ang lÆ°u dá»Ÿ dang hay khÃ´ng.
+        /// Kiểm tra có ván đấu nào đang lưu dở dang hay không.
         /// </summary>
         public bool HasSavedGame()
         {
@@ -137,7 +137,7 @@ namespace Game.Data
         }
 
         /// <summary>
-        /// XÃ³a tráº¡ng thÃ¡i vÃ¡n chÆ¡i khi vÃ¡n Ä‘áº¥u káº¿t thÃºc (Tháº¯ng hoáº·c Thua).
+        /// Xóa trạng thái ván chơi khi ván đấu kết thúc (Thắng hoặc Thua).
         /// </summary>
         public void ClearSaveData()
         {
@@ -184,7 +184,7 @@ namespace Game.Data
 
             if (string.IsNullOrEmpty(sig) || !VerifyHmac(value.ToString(), sig))
             {
-                Debug.LogWarning($"[SaveService TAMPER DETECTED] GiÃ¡ trá»‹ '{key}' bá»‹ can thiá»‡p trÃ¡i phÃ©p hoáº·c thiáº¿u chá»¯ kÃ½ HMAC! Reset vá» {defaultValue}.");
+                Debug.LogWarning($"[SaveService TAMPER DETECTED] Giá trị '{key}' bị can thiệp trái phép hoặc thiếu chữ ký HMAC! Reset về {defaultValue}.");
                 SetSecureInt(key, defaultValue);
                 return defaultValue;
             }
@@ -203,4 +203,3 @@ namespace Game.Data
         }
     }
 }
-
