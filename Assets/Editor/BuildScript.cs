@@ -14,6 +14,14 @@ namespace Game.Editor
     public class BuildScript
     {
         /// <summary>
+        /// Điểm vào cho AutoQA Batchmode CLI theo run_unity.py (-m Game.Editor.BuildScript.AutoQACheck).
+        /// </summary>
+        public static void AutoQACheck()
+        {
+            CoreValidationHelper.ValidateCore();
+        }
+
+        /// <summary>
         /// Kiểm dịch tài nguyên Staging: Đảm bảo không phát hành APK Store khi chưa reskin 100% tài nguyên gốc.
         /// </summary>
         public static bool CheckStagingQuarantine(bool abortIfViolation = false)
@@ -64,6 +72,7 @@ namespace Game.Editor
         public static void BuildAndroid()
         {
             CheckStagingQuarantine(abortIfViolation: false);
+            ConfigureReleaseKeystore();
             BuildAndroidInternal(isReleaseAab: false);
         }
 
